@@ -73,7 +73,7 @@ export default function DailySalesChart({
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg w-full  h-full">
-      <h2 className="text-xl font-semibold mb-4 text">ยอดขายรายวัน ของสินค้าทั่วไป(บาท)</h2>
+      <h2 className="text-xl font-semibold mb-4 text">ยอดขายรายวัน ของสินค้าทั้งหมด(บาท)</h2>
       <Line data={data} options={options} />
     </div>
   );

@@ -7,6 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type BuyProduct = {
   id: string;
@@ -42,6 +43,30 @@ export type BuyProduct = {
 };
 
 export const columns: ColumnDef<BuyProduct>[] = [
+    {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorFn: (row) => row.product.name,
     header: "สินค้า",

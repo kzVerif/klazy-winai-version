@@ -84,31 +84,41 @@ export default function BankSettingForm({ data }: { data:  Bank }) {
       </div>
 
       {/* --- เลขบัญชี --- */}
+      {/* --- เลขบัญชี --- */}
       <div className="grid gap-3">
         <Label htmlFor="accountNumber">เลขที่บัญชี</Label>
+        <p className="text-xs text-red-400">
+          กรุณากรอกเฉพาะตัวเลขเท่านั้น (ไม่เว้นวรรค / ไม่ใส่สัญลักษณ์)
+        </p>
         <Input
           id="accountNumber"
           name="accountNumber"
           defaultValue={data.bankAccount}
-          placeholder="เช่น 123-456-7890"
+          placeholder="เช่น 1234567890"
         />
       </div>
 
       {/* --- ชื่อบัญชี --- */}
       <div className="grid gap-3">
         <Label htmlFor="accountName">ชื่อผู้รับเงิน</Label>
+        <p className="text-xs text-red-400">
+          กรุณากรอกชื่อ-นามสกุลตามบัญชี (ไม่ต้องใส่คำนำหน้า)
+        </p>
         <Input
           id="accountName"
           name="accountName"
           defaultValue={data.bankName}
-          placeholder="ชื่อ-นามสกุล"
+          placeholder="เช่น สมชาย ใจดี"
         />
       </div>
 
       {/* --- ธนาคาร Selector --- */}
       <div className="grid gap-3">
         <Label htmlFor="bank">ธนาคาร</Label>
-        <Select onValueChange={setSelectedBank} defaultValue={data.bankProvider}>
+        <Select
+          onValueChange={setSelectedBank}
+          defaultValue={data.bankProvider}
+        >
           <SelectTrigger id="bank">
             <SelectValue placeholder="เลือกธนาคาร" />
           </SelectTrigger>
