@@ -8,89 +8,95 @@ datasource db {
 }
 
 model Tenant {
-  id          String    @id @default(cuid())
-  username    String    @unique
-  password    String
-  email       String    @unique
-  name        String?
-  dateOfBirth DateTime?
-  telephone   String?
-  role        String    @default("user")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt 
-
-  websites        Websites[]
-  historyRents    historyRent[]
+  id           String        @id @default(cuid())
+  username     String        @unique
+  password     String
+  email        String        @unique
+  name         String?
+  dateOfBirth  DateTime?
+  telephone    String?
+  role         String        @default("user")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now()) @updatedAt
+  websites     Websites[]
+  historyRents historyRent[]
 }
 
 model Websites {
-  id        String    @id @default(cuid())
-  url       String    @unique
-  type      String
-  tenantId  String
-  expiresAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  websiteProducId String
-
-  Tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  HistoryRents    historyRent[]
-  WebsiteProducts WebsiteProducts @relation(fields: [websiteProducId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Users           Users[]
-  Class           Class[]
-  Products        Products[]
-  Stocks          Stocks[]
-  SuggestProducts SuggestProducts[]
-  historyBuys     HistoryBuy[]
-  orderSettings   OrderSetting?
-  orderProducts   OrderProducts[]
-  OrderPackages   OrderPackages[]
-  AppPremiumSetting AppPremiumSetting?
-  AppPremiums     AppPremiums[]
-  HistoryBuyAppPremium HistoryBuyAppPremium[]
-  SuggestAppPremiums   SuggestAppPremiums[]
-  Categories      Categories[]
-  SuggestCategories SuggestCategories[]
-  HistoryTopup   HistoryTopup[]
-  TopupTruemoney TopupTruemoney?
-  TopupBank     TopupBank?
-  TopupCode     TopupCode?
-  Code          Code[]
-  HistoryCode  HistoryCode[]
-  DiscountCode DiscountCode[]
-  HistoryDiscountCode HistoryDiscountCode[]
-  EtcButton    EtcButton[]
-  EtcButtonSetting EtcButtonSetting?
-  Settings  Settings?
-  SuggestOrderProducts SuggestOrderProducts[]
+  id                      String                    @id @default(cuid())
+  url                     String                    @unique
+  type                    String
+  tenantId                String
+  expiresAt               DateTime?
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @default(now()) @updatedAt
+  websiteProducId         String
+  AppPremiumSetting       AppPremiumSetting?
+  AppPremiums             AppPremiums[]
+  Categories              Categories[]
+  Class                   Class[]
+  Code                    Code[]
+  DiscountCode            DiscountCode[]
+  EtcButton               EtcButton[]
+  EtcButtonSetting        EtcButtonSetting?
+  historyBuys             HistoryBuy[]
+  HistoryBuyAppPremium    HistoryBuyAppPremium[]
   HistoryBuyOrderProducts HistoryBuyOrderProducts[]
+  HistoryCode             HistoryCode[]
+  HistoryDiscountCode     HistoryDiscountCode[]
+  HistoryTopup            HistoryTopup[]
+  OrderPackages           OrderPackages[]
+  orderProducts           OrderProducts[]
+  orderSettings           OrderSetting?
+  Products                Products[]
+  Settings                Settings?
+  Stocks                  Stocks[]
+  SuggestAppPremiums      SuggestAppPremiums[]
+  SuggestCategories       SuggestCategories[]
+  SuggestOrderProducts    SuggestOrderProducts[]
+  SuggestProducts         SuggestProducts[]
+  TopupBank               TopupBank?
+  TopupCode               TopupCode?
+  TopupTruemoney          TopupTruemoney?
+  Users                   Users[]
+  Tenant                  Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  WebsiteProducts         WebsiteProducts           @relation(fields: [websiteProducId], references: [id], onDelete: Cascade)
+  HistoryRents            historyRent[]
+
+  @@index([tenantId], map: "Websites_tenantId_fkey")
+  @@index([websiteProducId], map: "Websites_websiteProducId_fkey")
 }
 
 model historyRent {
-  id         String   @id @default(cuid())
-  tenantId   String
-  websiteId  String
+  id               String          @id @default(cuid())
+  tenantId         String
+  websiteId        String
   websiteProductId String
-  timeOfRent Int
-  price      Float
-  rentDate   DateTime @default(now())
+  timeOfRent       Int
+  price            Float
+  rentDate         DateTime        @default(now())
+  tenant           Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  website          Websites        @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  websiteProduct   WebsiteProducts @relation(fields: [websiteProductId], references: [id], onDelete: Cascade)
 
-  tenant  Tenant   @relation(fields: [tenantId], references: [id],  onDelete: Cascade, onUpdate: Cascade)
-  website Websites @relation(fields: [websiteId], references: [id],  onDelete: Cascade, onUpdate: Cascade)
-  websiteProduct WebsiteProducts @relation(fields: [websiteProductId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([tenantId], map: "historyRent_tenantId_fkey")
+  @@index([websiteId], map: "historyRent_websiteId_fkey")
+  @@index([websiteProductId], map: "historyRent_websiteProductId_fkey")
 }
 
 model WebsiteProducts {
-  id          String   @id @default(cuid())
-  productName String
-  Description String
-  image       String? @db.Text
-  price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-
-  website Websites []
-  historyRents historyRent[]
+  id            String        @id @default(cuid())
+  productName   String
+  Description   String
+  image         String?       @db.Text
+  price         Float
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
+  price3mounth  Float         @default(0)
+  price6mounth  Float         @default(0)
+  price12mounth Float         @default(0)
+  website       Websites[]
+  historyRents  historyRent[]
 }
 
 model Users {
@@ -100,22 +106,21 @@ model Users {
   role                    String                    @default("user")
   points                  Float                     @default(0)
   totalPoints             Float                     @default(0)
-  // เปลี่ยนชื่อตรงนี้ไม่ให้ซ้ำกับ Relation class ด้านล่าง
-  userClassName           String                    @default("ไม่ทราบคลาส") 
+  userClassName           String                    @default("ไม่ทราบคลาส")
   createdAt               DateTime                  @default(now())
   websiteId               String
   classId                 String
-
-  website                 Websites                  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  // เพิ่มคอมม่าหน้า onDelete
-  class                   Class                     @relation(fields: [classId], references: [id], onUpdate: Cascade)
-  
   HistoryBuys             HistoryBuy[]
-  HistoryBuyOrderProducts HistoryBuyOrderProducts[]
   HistoryBuyAppPremium    HistoryBuyAppPremium[]
-  HistoryTopup            HistoryTopup[]
+  HistoryBuyOrderProducts HistoryBuyOrderProducts[]
   HistoryCode             HistoryCode[]
   HistoryDiscountCode     HistoryDiscountCode[]
+  HistoryTopup            HistoryTopup[]
+  class                   Class                     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  website                 Websites                  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@index([classId], map: "Users_classId_fkey")
+  @@index([websiteId], map: "Users_websiteId_fkey")
 }
 
 model Class {
@@ -125,54 +130,61 @@ model Class {
   isPercent Boolean  @default(false)
   reward    Float    @default(0)
   websiteId String
-
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
   Users     Users[]
-  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([websiteId], map: "Class_websiteId_fkey")
 }
 
 model Products {
-  id            String  @id @default(cuid())
-  name          String  @default("ไม่ทราบชื่อสินค้า")
-  image         String? @db.Text
-  detail        String? @db.Text
-  price         Float   @default(0)
-  isDiscount    Boolean @default(false)
-  priceDiscount Float   @default(0)
-  isPromotion   Boolean @default(false)
-  buy           Int     @default(0)
-  free          Int     @default(0)
-  websiteId     String
-  categoryId    String
-
-  website         Websites          @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  category       Categories       @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id              String            @id @default(cuid())
+  name            String            @default("ไม่ทราบชื่อสินค้า")
+  image           String?           @db.Text
+  detail          String?           @db.Text
+  price           Float             @default(0)
+  isDiscount      Boolean           @default(false)
+  priceDiscount   Float             @default(0)
+  isPromotion     Boolean           @default(false)
+  buy             Int               @default(0)
+  free            Int               @default(0)
+  websiteId       String
+  categoryId      String
+  historyBuys     HistoryBuy[]
+  category        Categories        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  website         Websites          @relation(fields: [websiteId], references: [id], onDelete: Cascade)
   stocks          Stocks[]
   suggestProducts SuggestProducts[]
-  historyBuys     HistoryBuy[]
+
+  @@index([categoryId], map: "Products_categoryId_fkey")
+  @@index([websiteId], map: "Products_websiteId_fkey")
 }
 
 model Stocks {
-  id        String  @id @default(cuid())
-  detail    String  @db.LongText
-  status    Boolean @default(true)
-  productId String
-  websiteId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  website     Websites     @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product     Products     @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id          String       @id @default(cuid())
+  detail      String       @db.LongText
+  status      Boolean      @default(true)
+  productId   String
+  websiteId   String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now()) @updatedAt
   historyBuys HistoryBuy[]
+  product     Products     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  website     Websites     @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@index([productId], map: "Stocks_productId_fkey")
+  @@index([websiteId], map: "Stocks_websiteId_fkey")
 }
 
 model SuggestProducts {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   productId String
   websiteId String
   createdAt DateTime @default(now())
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-  website Websites @relation(fields: [websiteId], references: [id],  onDelete: Cascade, onUpdate: Cascade)
-  product Products @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([productId], map: "SuggestProducts_productId_fkey")
+  @@index([websiteId], map: "SuggestProducts_websiteId_fkey")
 }
 
 model HistoryBuy {
@@ -183,282 +195,309 @@ model HistoryBuy {
   price     Float    @default(0)
   createdAt DateTime @default(now())
   websiteId String
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+  stock     Stocks   @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-website Websites @relation(fields: [websiteId], references: [id],  onDelete: Cascade, onUpdate: Cascade)
-  stock   Stocks   @relation(fields: [stockId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Products @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user    Users    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([productId], map: "HistoryBuy_productId_fkey")
+  @@index([stockId], map: "HistoryBuy_stockId_fkey")
+  @@index([userId], map: "HistoryBuy_userId_fkey")
+  @@index([websiteId], map: "HistoryBuy_websiteId_fkey")
 }
 
 model OrderSetting {
-  id        String  @id @default(cuid())
-  status    Boolean @default(true)
-  image     String? @db.Text
-  isSuggest Boolean @default(false)
-  websiteId String  @unique
-
-  website Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        String   @id @default(cuid())
+  status    Boolean  @default(true)
+  image     String?  @db.Text
+  isSuggest Boolean  @default(false)
+  websiteId String   @unique
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 }
 
 model OrderProducts {
-  id        String  @id @default(cuid())
-  name      String  @default("ไม่ทราบชื่อสินค้า")
-  image     String? @db.Text
-  detail    String? @db.Text
-  websiteId String
-
-  website                 Websites                  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  orderPackages           OrderPackages[]
+  id                      String                    @id @default(cuid())
+  name                    String                    @default("ไม่ทราบชื่อสินค้า")
+  image                   String?                   @db.Text
+  detail                  String?                   @db.Text
+  websiteId               String
   HistoryBuyOrderProducts HistoryBuyOrderProducts[]
-  SuggestOrderProducts   SuggestOrderProducts[]
+  orderPackages           OrderPackages[]
+  website                 Websites                  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  SuggestOrderProducts    SuggestOrderProducts[]
+
+  @@index([websiteId], map: "OrderProducts_websiteId_fkey")
 }
 
 model OrderPackages {
-  id             String  @id @default(cuid())
-  name           String  @default("ไม่ทราบชื่อแพ็คเกจ")
-  price          Float   @default(0)
-  isDiscount     Boolean @default(false)
-  priceDiscount  Float   @default(0)
-  websiteId      String
-  orderProductId String
-
-  website                 Websites                  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  orderProducts           OrderProducts             @relation(fields: [orderProductId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id                      String                    @id @default(cuid())
+  name                    String                    @default("ไม่ทราบชื่อแพ็คเกจ")
+  price                   Float                     @default(0)
+  isDiscount              Boolean                   @default(false)
+  priceDiscount           Float                     @default(0)
+  websiteId               String
+  orderProductId          String
   HistoryBuyOrderProducts HistoryBuyOrderProducts[]
+  orderProducts           OrderProducts             @relation(fields: [orderProductId], references: [id], onDelete: Cascade)
+  website                 Websites                  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@index([orderProductId], map: "OrderPackages_orderProductId_fkey")
+  @@index([websiteId], map: "OrderPackages_websiteId_fkey")
 }
 
 model HistoryBuyOrderProducts {
-  id             String   @id @default(cuid())
-  uid            String?  @db.Text
-  pass           String?  @db.Text
-  contact        String?  @db.Text
+  id             String        @id @default(cuid())
+  uid            String?       @db.Text
+  pass           String?       @db.Text
+  contact        String?       @db.Text
   userId         String
   orderProductId String
   orderPackageId String
-  price          Float  @default(0.00)
-  createdAt      DateTime @default(now())
+  price          Float         @default(0)
+  createdAt      DateTime      @default(now())
   websiteId      String
-  status         String   @default("pending")
-  reason         String   @default("รอทำรายการ")
+  status         String        @default("pending")
+  reason         String        @default("รอทำรายการ")
+  orderPackage   OrderPackages @relation(fields: [orderPackageId], references: [id], onDelete: Cascade)
+  orderProduct   OrderProducts @relation(fields: [orderProductId], references: [id], onDelete: Cascade)
+  user           Users         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  website        Websites      @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-  website     Websites       @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  orderProduct OrderProducts @relation(fields: [orderProductId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  orderPackage OrderPackages @relation(fields: [orderPackageId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user         Users         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([orderPackageId], map: "HistoryBuyOrderProducts_orderPackageId_fkey")
+  @@index([orderProductId], map: "HistoryBuyOrderProducts_orderProductId_fkey")
+  @@index([userId], map: "HistoryBuyOrderProducts_userId_fkey")
+  @@index([websiteId], map: "HistoryBuyOrderProducts_websiteId_fkey")
 }
 
 model SuggestOrderProducts {
- id             String        @id @default(cuid())
- orderProductId String
- websiteId      String
+  id             String        @id @default(cuid())
+  orderProductId String
+  websiteId      String
+  orderProduct   OrderProducts @relation(fields: [orderProductId], references: [id], onDelete: Cascade)
+  website        Websites      @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
- website       Websites     @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
- orderProduct   OrderProducts @relation(fields: [orderProductId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([orderProductId], map: "SuggestOrderProducts_orderProductId_fkey")
+  @@index([websiteId], map: "SuggestOrderProducts_websiteId_fkey")
 }
 
 model AppPremiumSetting {
-  id     String  @id @default(cuid())
-  status Boolean @default(true)
-  image  String? @db.Text
-  key    String? @db.Text
-  isSuggest Boolean @default(false)
-  websiteId String  @unique
-
-  website Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        String   @id @default(cuid())
+  status    Boolean  @default(true)
+  image     String?  @db.Text
+  key       String?  @db.Text
+  isSuggest Boolean  @default(false)
+  websiteId String   @unique
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 }
 
-model AppPremiums{
-  id            String  @id @default(cuid())
-  name          String  @default("ไม่ทราบชื่อสินค้า")
-  price         Float   @default(0)
-  isDiscount    Boolean @default(false)
-  priceDiscount Float   @default(0)
-  websiteId     String
-  byshopId      String  @default("100")
-
-  website         Websites         @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+model AppPremiums {
+  id                    String                 @id @default(cuid())
+  name                  String                 @default("ไม่ทราบชื่อสินค้า")
+  price                 Float                  @default(0)
+  isDiscount            Boolean                @default(false)
+  priceDiscount         Float                  @default(0)
+  websiteId             String
+  byshopId              String                 @default("100")
+  website               Websites               @relation(fields: [websiteId], references: [id], onDelete: Cascade)
   HisrtoryBuyAppPremium HistoryBuyAppPremium[]
-  SuggestAppPremiums   SuggestAppPremiums[]
+  SuggestAppPremiums    SuggestAppPremiums[]
+
+  @@index([websiteId], map: "AppPremiums_websiteId_fkey")
 }
 
 model HistoryBuyAppPremium {
-  id String @id @default(cuid())
-  userId String
-  info String @db.Text
+  id           String      @id @default(cuid())
+  userId       String
+  info         String      @db.Text
   appPremiumId String
-  price Float   @default(0)
-  createdAt DateTime @default(now())
-  websiteId String
+  price        Float       @default(0)
+  createdAt    DateTime    @default(now())
+  websiteId    String
+  appPremium   AppPremiums @relation(fields: [appPremiumId], references: [id], onDelete: Cascade)
+  user         Users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  website      Websites    @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-website Websites @relation(fields: [websiteId], references: [id],  onDelete: Cascade, onUpdate: Cascade)
-  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  appPremium   AppPremiums @relation(fields: [appPremiumId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([appPremiumId], map: "HistoryBuyAppPremium_appPremiumId_fkey")
+  @@index([userId], map: "HistoryBuyAppPremium_userId_fkey")
+  @@index([websiteId], map: "HistoryBuyAppPremium_websiteId_fkey")
 }
 
-model SuggestAppPremiums{
+model SuggestAppPremiums {
   id           String      @id @default(cuid())
   appPremiumId String
   websiteId    String
+  appPremium   AppPremiums @relation(fields: [appPremiumId], references: [id], onDelete: Cascade)
+  website      Websites    @relation(fields: [websiteId], references: [id])
 
-  website       Websites     @relation(fields: [websiteId], references: [id])
-  appPremium   AppPremiums @relation(fields: [appPremiumId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([appPremiumId], map: "SuggestAppPremiums_appPremiumId_fkey")
+  @@index([websiteId], map: "SuggestAppPremiums_websiteId_fkey")
 }
 
-model Categories{
-  id    String  @id @default(cuid())
-  name  String  @default("ไม่ทราบชื่อหมวดหมู่")
-  image String? @db.Text
-  websiteId String
-
-  website   Websites          @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Products  Products[]
+model Categories {
+  id                String              @id @default(cuid())
+  name              String              @default("ไม่ทราบชื่อหมวดหมู่")
+  image             String?             @db.Text
+  websiteId         String
+  website           Websites            @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  Products          Products[]
   SuggestCategories SuggestCategories[]
+
+  @@index([websiteId], map: "Categories_websiteId_fkey")
 }
 
-model SuggestCategories{
-  id          String  @id @default(cuid())
-  categoriesId  String
-  websiteId   String
+model SuggestCategories {
+  id           String     @id @default(cuid())
+  categoriesId String
+  websiteId    String
+  category     Categories @relation(fields: [categoriesId], references: [id], onDelete: Cascade)
+  website      Websites   @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-  website   Websites    @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  category  Categories  @relation(fields: [categoriesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([categoriesId], map: "SuggestCategories_categoriesId_fkey")
+  @@index([websiteId], map: "SuggestCategories_websiteId_fkey")
 }
 
-model HistoryTopup{
-  id        String    @id @default(cuid())
-  amount    Decimal   @default(0) @db.Decimal(10, 2)
-  reason    String    @default("เติมเงินจากระบบ")
-  topupType String    @default("ทรูวอลเลท")
-  createdAt DateTime  @default(now())
-  userId String
+model HistoryTopup {
+  id        String   @id @default(cuid())
+  amount    Decimal  @default(0) @db.Decimal(10, 2)
+  reason    String   @default("เติมเงินจากระบบ")
+  topupType String   @default("ทรูวอลเลท")
+  createdAt DateTime @default(now())
+  userId    String
   websiteId String
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-  website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([userId], map: "HistoryTopup_userId_fkey")
+  @@index([websiteId], map: "HistoryTopup_websiteId_fkey")
 }
 
 model TopupTruemoney {
-  id           String  @id @default(cuid())
-  phone        String  @default("ไม่ทราบเบอร์รับเงิน")
-  available    Boolean @default(false)
-  feeAvailable Boolean @default(false)
-  websiteId    String  @unique
-
-  website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id           String   @id @default(cuid())
+  phone        String   @default("ไม่ทราบเบอร์รับเงิน")
+  available    Boolean  @default(false)
+  feeAvailable Boolean  @default(false)
+  websiteId    String   @unique
+  website      Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 }
 
 model TopupBank {
-  id           String  @id @default(cuid())
-  bankAccount  String  @default("ไม่ทราบเลขที่บัญชี")
-  bankName     String  @default("ไม่ทราบชื่อบัญชี")
-  bankProvider String  @default("ไม่ทราบธนาคาร")
-  available    Boolean @default(false)
-  websiteId    String  @unique
- 
-  website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id           String   @id @default(cuid())
+  bankAccount  String   @default("ไม่ทราบเลขที่บัญชี")
+  bankName     String   @default("ไม่ทราบชื่อบัญชี")
+  bankProvider String   @default("ไม่ทราบธนาคาร")
+  available    Boolean  @default(false)
+  websiteId    String   @unique
+  website      Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 }
 
 model TopupCode {
-  id        String  @id @default(cuid())
-  available Boolean @default(false)
-  websiteId String  @unique
-  website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        String   @id @default(cuid())
+  available Boolean  @default(false)
+  websiteId String   @unique
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 }
 
 model Code {
-  id              String   @id @default(cuid())
-  name            String   @default("ไม่ทราบชื่อcode")
-  key             String   @unique
-  reward          Float    @default(0)
-  currentUse      Int      @default(0)
+  id              String        @id @default(cuid())
+  name            String        @default("ไม่ทราบชื่อcode")
+  key             String        @unique
+  reward          Float         @default(0)
+  currentUse      Int           @default(0)
   maxUse          Int
-  canDuplicateUse Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  expired         DateTime @default(now())
+  canDuplicateUse Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  expired         DateTime      @default(now())
   websiteId       String
-
-  website         Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  website         Websites      @relation(fields: [websiteId], references: [id], onDelete: Cascade)
   HistoryCode     HistoryCode[]
+
+  @@index([websiteId], map: "Code_websiteId_fkey")
 }
 
 model HistoryCode {
-  id String @id @default(cuid())
-  codeId String
-  userId String
+  id        String   @id @default(cuid())
+  codeId    String
+  userId    String
   websiteId String
   createdAt DateTime @default(now())
+  code      Code     @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-  website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  code   Code   @relation(fields: [codeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([codeId], map: "HistoryCode_codeId_fkey")
+  @@index([userId], map: "HistoryCode_userId_fkey")
+  @@index([websiteId], map: "HistoryCode_websiteId_fkey")
 }
 
 model DiscountCode {
-  id              String   @id @default(cuid())
-  name            String   @default("ไม่ทราบชื่อcode")
-  key             String    
-  isPercent       Boolean  @default(false)
-  reward          Float    @default(0)
-  currentUse      Int      @default(0)
-  maxUse          Int      @default(0)
-  canDuplicateUse Boolean  @default(false)
-  normalProduct   Boolean  @default(false)
-  appPremiumProduct   Boolean  @default(false)
-  orderProduct        Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  expired         DateTime @default(now())
-  websiteId       String
-
-  website         Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id                  String                @id @default(cuid())
+  name                String                @default("ไม่ทราบชื่อcode")
+  key                 String
+  isPercent           Boolean               @default(false)
+  reward              Float                 @default(0)
+  currentUse          Int                   @default(0)
+  maxUse              Int                   @default(0)
+  canDuplicateUse     Boolean               @default(false)
+  normalProduct       Boolean               @default(false)
+  appPremiumProduct   Boolean               @default(false)
+  orderProduct        Boolean               @default(false)
+  createdAt           DateTime              @default(now())
+  expired             DateTime              @default(now())
+  websiteId           String
+  website             Websites              @relation(fields: [websiteId], references: [id], onDelete: Cascade)
   HistoryDiscountCode HistoryDiscountCode[]
+
+  @@index([websiteId], map: "DiscountCode_websiteId_fkey")
 }
 
 model HistoryDiscountCode {
-  id String @id @default(cuid())
-  codeId String
-  userId String
+  id        String       @id @default(cuid())
+  codeId    String
+  userId    String
   websiteId String
-  createdAt DateTime @default(now())
+  createdAt DateTime     @default(now())
+  code      DiscountCode @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  user      Users        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  website   Websites     @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-  website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  code   DiscountCode @relation(fields: [codeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([codeId], map: "HistoryDiscountCode_codeId_fkey")
+  @@index([userId], map: "HistoryDiscountCode_userId_fkey")
+  @@index([websiteId], map: "HistoryDiscountCode_websiteId_fkey")
 }
 
 model EtcButton {
-   id          String  @id @default(cuid())
-   image       String?  @db.Text
-   link        String?  @db.Text
-   websiteId   String
+  id        String   @id @default(cuid())
+  image     String?  @db.Text
+  link      String?  @db.Text
+  websiteId String
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-   website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([websiteId], map: "EtcButton_websiteId_fkey")
 }
 
 model EtcButtonSetting {
-   id          String  @id @default(cuid())
-   isOpen      Boolean @default(false)
-   websiteId   String  @unique
-   website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        String   @id @default(cuid())
+  isOpen    Boolean  @default(false)
+  websiteId String   @unique
+  website   Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 }
 
 model Settings {
-  id              String  @id @default(cuid())
-  primaryColor    String  @default("#ffffff")
-  secondaryColor  String  @default("#000000")
-  hoverColor      String  @default("#ff0000")
-  backgroundImage String? @db.Text
-  webhookDiscord  String  @default("")
-  shopName        String  @default("ร้านค้าไม่ทราบชื่อ")
-  announcement    String  @default("")
-  icon            String? @db.Text
-  logo            String? @db.Text
-  detail          String? @db.Text
-  contact         String? @db.Text
-  banner          String? @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt 
-  websiteId   String @unique
-
-  website   Websites  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id              String   @id @default(cuid())
+  primaryColor    String   @default("#ffffff")
+  secondaryColor  String   @default("#000000")
+  hoverColor      String   @default("#ff0000")
+  backgroundImage String?  @db.Text
+  webhookDiscord  String   @default("")
+  shopName        String   @default("ร้านค้าไม่ทราบชื่อ")
+  announcement    String   @default("")
+  icon            String?  @db.Text
+  logo            String?  @db.Text
+  detail          String?  @db.Text
+  contact         String?  @db.Text
+  banner          String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+  websiteId       String   @unique
+  website         Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 }
-
