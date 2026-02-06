@@ -6,8 +6,6 @@ export default async function Page() {
   const res = await fetch("https://byshop.me/api/product");
   const products = await res.json();
   const apps = await getAllAppPremiumProducts();
-  console.log(apps);
-  
   const statusApp = await getStatusAppremiumForUser()
 
   if (!statusApp.status) {

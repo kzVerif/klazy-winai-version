@@ -90,12 +90,9 @@ export default function AppList({
     return app ? Number(app.priceDiscount) : 0;
   };
 
-  const findApp = (productName: string) =>
-    apps.find((a) => a.name.trim() === productName.trim());
   const getLink = (id: string) => {
-    const appId = apps.find((a) => a.byshopId.trim() === id.trim());
-
-    return appId.id;
+    const app = apps.find((a) => a.byshopId.trim() === id.trim());
+    return app.id;
   };
 
   return (
