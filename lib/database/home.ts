@@ -13,8 +13,16 @@ export async function getHomepage() {
         announcement: true,
       },
     });
-    const member = await prisma.users.count();
-    const allStock = await prisma.stocks.count();
+    const member = await prisma.users.count({
+      where: {
+        websiteId: identifyWebsite
+      }
+    });
+    const allStock = await prisma.stocks.count({
+      where: {
+        websiteId: identifyWebsite
+      }
+    });
     const soldStock = await prisma.stocks.count({
       where: {
         websiteId: identifyWebsite,

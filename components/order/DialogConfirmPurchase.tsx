@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input"; // ✅ เพิ่ม
 import { Badge } from "../ui/badge";
 import { checkDiscountcode } from "@/lib/database/DiscountCode";
 import { ScrollArea } from "../ui/scroll-area";
+import { useUser } from "@/contexts/UserContext";
 
 type Props = {
   selectedPackage: any;
@@ -44,6 +45,7 @@ export default function DialogConfirmPurchase({
   const [showPassword, setShowPassword] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { refreshUser } = useUser();
 
   // ✅ โค้ดส่วนลด
   const [code, setCode] = useState("");
@@ -174,6 +176,7 @@ export default function DialogConfirmPurchase({
 
       toast.success(result.message ?? "สั่งซื้อสำเร็จ");
       setOpenConfirm(false);
+      await refreshUser()
     } catch (e) {
       toast.dismiss(loadingId);
       toast.error("เกิดข้อผิดพลาด กรุณาลองใหม่");

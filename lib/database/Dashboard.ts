@@ -65,6 +65,7 @@ export async function getMarketingData(): Promise<MarketingDataResponse | null> 
             WHERE websiteId = ${identifyWebsite}
                 AND createdAt >= CURDATE()
                 AND createdAt < CURDATE() + INTERVAL 1 DAY
+                AND status != "cancel"
             GROUP BY websiteId
         )
         SELECT 
@@ -303,7 +304,7 @@ export async function getWeeklySalesChart() {
         UNION ALL
         
         SELECT createdAt, price FROM HistoryBuyOrderProducts 
-        WHERE websiteId = ${identifyWebsite} AND createdAt >= ${startOfWeek} AND createdAt < ${endOfWeek}
+        WHERE websiteId = ${identifyWebsite} AND createdAt >= ${startOfWeek} AND createdAt < ${endOfWeek} AND status != "cancel"
         
         UNION ALL
         
@@ -451,7 +452,7 @@ export async function getTop5Orders() {
         SUM(hb.price) AS revenue
       FROM HistoryBuyOrderProducts hb
       JOIN OrderPackages op ON hb.orderPackageId = op.id
-      WHERE hb.websiteId = ${identifyWebsite}
+      WHERE hb.websiteId = ${identifyWebsite} AND hb.status != "cancel"
       GROUP BY hb.orderPackageId, op.name
       ORDER BY revenue DESC
       LIMIT 5;
@@ -730,6 +731,9 @@ export async function getSOLDForDashboard() {
       where: {
         createdAt: { gte: today },
         websiteId: identifyWebsite,
+        status: {
+          in: ["success", "pending"],
+        },
       },
     });
 
@@ -801,6 +805,9 @@ export async function revenueRatio() {
     const revOrders = await prisma.historyBuyOrderProducts.aggregate({
       where: {
         websiteId: identifyWebsite,
+        status: {
+          in: ["success", "pending"],
+        },
       },
       _sum: {
         price: true,
@@ -808,9 +815,9 @@ export async function revenueRatio() {
     });
     const result = {
       name: ["สินค้าทั่วไป", "สินค้าแบบแอปพรีเมี่ยม", "สินค้าแบบพรีออเดอร์"],
-      revNormal: Number(revNormal._sum.price?.toFixed(2)) ?? 0,
-      revApps: Number(revApps._sum.price?.toFixed(2)) ?? 0,
-      revOrders: Number(revOrders._sum.price?.toFixed(2)) ?? 0,
+      revNormal: Number(revNormal._sum.price) ?? 0,
+      revApps: Number(revApps._sum.price) ?? 0,
+      revOrders: Number(revOrders._sum.price) ?? 0,
     };
     return result;
   } catch (error) {

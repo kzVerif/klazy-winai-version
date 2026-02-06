@@ -37,7 +37,7 @@ export default async function page({ params }: { params: { id: string } }) {
                   </div>
                   <div className="flex w-full justify-between items-center">
                     <div>
-                      <h3 className="text-base font-semibold ">{s.name}</h3>
+                      <h3 className="text-base font-semibold text">{s.name}</h3>
                       <h3 className="text-sm">{s.detail}</h3>
                     </div>
                     <Button className="btn-main px-4 py-2 text-sm">

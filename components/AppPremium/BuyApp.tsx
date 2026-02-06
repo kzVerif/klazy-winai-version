@@ -60,7 +60,6 @@ export default function BuyApp({
     percent?: number;
     amount?: number;
   }>(null);
-
   const { data: session, update } = useSession();
 
   const priceNum = Number(price) || 0;

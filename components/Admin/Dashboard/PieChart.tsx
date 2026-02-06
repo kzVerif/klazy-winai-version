@@ -61,7 +61,7 @@ export default function PieChart({ rev }: { rev: any }) {
       },
     },
   };
-
+  
   return (
     <div className="bg-white p-6 shadow-sm border border-slate-100 rounded-3xl transition-all hover:shadow-md h-full">
       <div className="flex flex-col items-center">

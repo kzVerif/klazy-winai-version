@@ -45,6 +45,7 @@ export async function addClassRank(data: any) {
       },
     });
     revalidatePath("/admin/classrank");
+    revalidatePath("/profile");
     return {
       success: true,
       message: "สร้างคลาสสำเร็จ",
@@ -97,6 +98,7 @@ export async function deleteClassRank(id: string) {
         where: { id: id },
       });
       revalidatePath("/admin/classrank");
+      revalidatePath("/profile");
       return { success: true, message: "ลบข้อมูลและย้ายสมาชิกเรียบร้อยแล้ว" };
     });
   } catch (error) {
