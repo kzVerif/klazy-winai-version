@@ -1,13 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-   images: {
+  images: {
     unoptimized: true,
   },
-  experimental: {
-    serverComponentsExternalPackages: ['impit'],
-  },
+
+  // ✅ อยู่ระดับบนสุดแล้ว (ไม่ใช่ experimental)
+  serverExternalPackages: ["impit"],
 };
 
 export default nextConfig;
