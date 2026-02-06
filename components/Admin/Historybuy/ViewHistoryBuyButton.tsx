@@ -14,10 +14,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Copy01Icon, ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AdminBuyProduct } from "@/app/(admin)/admin/historybuy/columns";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import toast from "react-hot-toast";
+import { AdminBuyProduct } from "@/app/(admin)/admin/historybuy/columns";
 export function ViewHistoryBuyButton({
   product,
 }: {
@@ -56,6 +56,11 @@ export function ViewHistoryBuyButton({
           <div className="grid gap-3">
             <Label htmlFor="name">ชื่อสินค้า</Label>
             <Input id="name" name="name" defaultValue={product.product.name} disabled />
+          </div>
+
+          <div className="grid gap-3">
+            <Label htmlFor="name">ราคาที่จ่าย</Label>
+            <Input id="name" name="name" defaultValue={`฿${product.price}`} disabled />
           </div>
 
           <div className="grid gap-3">

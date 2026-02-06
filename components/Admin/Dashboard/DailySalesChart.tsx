@@ -28,7 +28,7 @@ export default function DailySalesChart({
   dailySales: any;
 }) {
   const labels = dailySales.map((d: any) => d.date); // "11-20"
-  const values = dailySales.map((d: any) => d.revenue);
+  const values = dailySales.map((d: any) => d.total);
 
   const chartGradient = (ctx: CanvasRenderingContext2D) => {
     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
@@ -72,8 +72,8 @@ export default function DailySalesChart({
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-lg w-full">
-      <h2 className="text-xl font-semibold mb-4">ยอดขายรายวัน (บาท)</h2>
+    <div className="bg-white p-6 rounded-2xl shadow-lg w-full  h-full">
+      <h2 className="text-xl font-semibold mb-4 text">ยอดขายรายวัน ของสินค้าทั่วไป(บาท)</h2>
       <Line data={data} options={options} />
     </div>
   );

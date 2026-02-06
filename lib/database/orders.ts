@@ -117,7 +117,7 @@ export async function buyOrderProduct(
   try {
     const user = await prisma.users.findUnique({
       where: { id: userId, websiteId: identifyWebsite },
-      select: { id: true, points: true, username: true },
+      select: { id: true, points: true, username: true, classId: true },
     });
 
     if (!user) {
@@ -180,8 +180,14 @@ export async function buyOrderProduct(
       ? basePrice - (basePrice * Number(codeCheck.data.reward)) / 100
       : basePrice - Number(codeCheck?.data?.reward ?? 0);
 
-    const totalPrice = Math.max(0, Math.round(computedTotal * 100) / 100);
-
+    const total = Math.max(0, Math.round(computedTotal * 100) / 100);
+    const rank = await prisma.class.findFirst({
+      where: {
+        id: user.classId,
+        websiteId: identifyWebsite
+      }
+    })
+    const totalPrice = Math.max(0,rank?.isPercent ? total - (total*rank.reward/100) : total- (rank?.reward ?? 0))
     // ✅ กัน race condition: หักเงินด้วยเงื่อนไข points >= totalPrice
     const updated = await prisma.users.updateMany({
       where: {

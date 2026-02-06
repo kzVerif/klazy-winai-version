@@ -162,7 +162,7 @@ export async function BuyAppPremium(data: any) {
     const [user, appPremiums] = await Promise.all([
       prisma.users.findFirst({
         where: { id: data.userId, websiteId: identifyWebsite },
-        select: { id: true, points: true, username: true }, // ✅ เพิ่ม username
+        select: { id: true, points: true, username: true, classId: true}, // ✅ เพิ่ม username
       }),
       prisma.appPremiums.findFirst({
         where: { id: data.productId, websiteId: identifyWebsite },
@@ -216,10 +216,17 @@ export async function BuyAppPremium(data: any) {
       ? baseTotal - (baseTotal * reward) / 100
       : baseTotal - reward;
 
-    const priceTotal = Math.max(0, Math.round(computedTotal * 100) / 100);
+    const total = Math.max(0, Math.round(computedTotal * 100) / 100);
 
+    const rank = await prisma.class.findFirst({
+      where: {
+        id: user.classId,
+        websiteId: identifyWebsite
+      }
+    })
+    const priceTotal = Math.max(0,rank?.isPercent ? total - (total*rank.reward/100) : total- (rank?.reward ?? 0))
     // 5) หักแต้ม
-    const dec = await prisma.users.updateMany({
+    const dec = await prisma.users.update({
       where: {
         id: user.id,
         websiteId: identifyWebsite,
@@ -228,7 +235,7 @@ export async function BuyAppPremium(data: any) {
       data: { points: { decrement: priceTotal } },
     });
 
-    if (dec.count === 0) {
+    if (dec.points < priceTotal) {
       return { success: false, message: "ยอดเงินในระบบไม่เพียงพอ" };
     }
 

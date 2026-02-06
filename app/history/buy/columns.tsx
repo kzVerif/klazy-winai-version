@@ -1,7 +1,8 @@
 "use client";
 import { ViewHistoryBuyButton } from "@/components/Admin/Historybuy/ViewHistoryBuyButton";
 import { Button } from "@/components/ui/button";
-import { Copy01Icon } from "@hugeicons/core-free-icons";
+import { Badge } from "@/components/ui/badge"; // สมมติว่ามี Badge component
+import { Copy01Icon, Calendar01Icon, Tag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -13,6 +14,7 @@ export type BuyProduct = {
   stockId: string;
   userId: string;
   createdAt: Date;
+  price: number
   product: {
     categoryId: string;
     detail: string | null;
@@ -42,72 +44,98 @@ export type BuyProduct = {
 export const columns: ColumnDef<BuyProduct>[] = [
   {
     accessorFn: (row) => row.product.name,
-    header: "ชื่อสินค้า",
-    cell: ({ row }) => (
-      <span
-        className="block truncate max-w-[200px]"
-        title={row.original.product.name}
-      >
-        {row.original.product.name}
-      </span>
-    ),
+    header: "สินค้า",
+    cell: ({ row }) => {
+      const { name, image } = row.original.product;
+      return (
+        <div className="flex items-center gap-3">
+          {/* เพิ่มรูปสินค้าเล็กๆ */}
+          <div className="w-10 h-10 rounded-md overflow-hidden bg-muted flex-shrink-0 border">
+             {image ? (
+                <img src={image} alt={name} className="w-full h-full object-cover" />
+             ) : (
+                <div className="w-full h-full flex items-center justify-center bg-secondary">
+                   <HugeiconsIcon icon={Tag01Icon} size={18} className="text-muted-foreground" />
+                </div>
+             )}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-semibold text-sm truncate max-w-[180px]" title={name}>
+              {name}
+            </span>
+          </div>
+        </div>
+      );
+    },
   },
   {
     accessorFn: (row) => row.stock.detail,
-    header: "รายละเอียด",
+    header: "รายละเอียด/รหัส",
     cell: ({ row }) => (
-      <span
-        className="block truncate max-w-[200px]"
-        title={row.original.stock.detail}
-      >
+      <code className="bg-muted px-2 py-1 rounded text-xs font-mono block truncate max-w-[200px]">
         {row.original.stock.detail}
+      </code>
+    ),
+  },
+  {
+    accessorFn: (row) => row.price,
+    header: "ยอดชำระ",
+    cell: ({ row }) => (
+      <span className="font-bold text-primary">
+        ฿{row.original.price.toLocaleString()}
       </span>
     ),
   },
   {
     accessorKey: "createdAt",
-    header: (
-      { column } // 👈 นี่คือส่วน header ที่คุณมีอยู่แล้ว
-    ) => (
-      <button
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="font-bold cursor-pointer"
+        className="font-bold -ml-2"
       >
-        วันที่{" "}
-        {column.getIsSorted() === "asc"
-          ? "↑"
-          : column.getIsSorted() === "desc"
-          ? "↓"
-          : ""}
-      </button>
+        วันที่ซื้อ
+        {/* <Calendar01Icon size={16} className="ml-1" /> */}
+      </Button>
     ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"));
-      const formattedDate = format(date, "dd/MM/yyyy HH:mm");
-      return <div className="text-left">{formattedDate}</div>;
+      return (
+        <div className="flex flex-col text-xs">
+          <span className="font-medium">{format(date, "dd MMM yyyy")}</span>
+          <span className="text-muted-foreground">{format(date, "HH:mm")} น.</span>
+        </div>
+      );
     },
   },
   {
-    accessorKey: "action",
+    id: "actions",
     header: "จัดการ",
     cell: ({ row }) => {
       const product = row.original;
+      console.log();
+      
       const onCopyClick = async () => {
         try {
           await navigator.clipboard.writeText(product.stock.detail);
-          toast.success("คัดลอกสำเร็จ");
+          toast.success("คัดลอกรหัสสินค้าแล้ว");
         } catch (error) {
-          toast.error("เกิดข้อผิดพลาด");
+          toast.error("ไม่สามารถคัดลอกได้");
         }
       };
-      // ----------------------------------
 
       return (
         <div className="flex gap-2">
-          {/* เรียกใช้ฟังก์ชันด้านบน */}
           <ViewHistoryBuyButton product={product} />
-          <Button variant={"outline"} onClick={onCopyClick} className="cursor-pointer">
-            <HugeiconsIcon icon={Copy01Icon} />
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={onCopyClick} 
+            className="transition-colors hover:bg-primary hover:text-white"
+            title="คัดลอกรายละเอียด"
+          >
+            <HugeiconsIcon icon={Copy01Icon}/>
           </Button>
         </div>
       );

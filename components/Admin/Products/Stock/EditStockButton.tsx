@@ -59,7 +59,7 @@ export function EditStockButton({ stock }: { stock: Stocks }) {
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>แก้ไขสต็อก</DialogTitle>
+          <DialogTitle className="text">แก้ไขสต็อก</DialogTitle>
           <p className="text-sm text-muted-foreground">
             เปลี่ยนแปลงรายละเอียดของสต็อกชิ้นนี้
           </p>

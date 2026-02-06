@@ -51,7 +51,7 @@ export const columns: ColumnDef<AdminTopupHis>[] = [
         );
       }
 
-      if (topupType === "Truemoney") {
+      if (topupType === "ทรูวอลเลท") {
         return (
           <Badge variant="secondary" className="bg-amber-600 text-white">
             {topupType}

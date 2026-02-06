@@ -30,6 +30,17 @@ export async function createUser(userData: authData) {
 
     const hashPassword = await bcrypt.hash(userData.password, 10);
 
+    const rank = await prisma.class.findFirst({
+      where: {
+        websiteId: identifyWebsite,
+        id: `rank-${identifyWebsite}`
+      }
+    })
+
+    if (!rank) {
+      return {success: false,  message: "ไม่พบแรงก์ที่กำหนด" }
+    }
+
     const user = await prisma.users.create({
       data: {
         username: userData.username,
@@ -37,7 +48,8 @@ export async function createUser(userData: authData) {
         points: 0, // ใส่ 0 ให้ Decimal
         totalPoints: 0, // ใส่ 0 ให้ Decimal
         websiteId: identifyWebsite,
-        classId: "class1",
+        classId: rank?.id,
+        userClassName: rank?.className
       },
     });
 
@@ -60,13 +72,8 @@ export async function createUser(userData: authData) {
       ],
     });
 
-    const plainUser = {
-      ...user,
-      points: Number(user.points),
-      totalPoints: Number(user.totalPoints),
-    };
     revalidatePath("/admin/users");
-    return { success: true, user: plainUser };
+    return { success: true, user: user };
   } catch (error: any) {
     if (error.code === "P2002" && error.meta?.target?.includes("username")) {
       return { success: false, message: "มีผู้ใช้นี้แล้วในระบบ" };
@@ -191,8 +198,6 @@ export async function getAllUsers(): Promise<GetAllUsersResult> {
     const users = await prisma.users.findMany({
       where: { websiteId: identifyWebsite },
     });
-    console.log(users);
-    
 
     return { success: true, data: users };
   } catch (error) {
@@ -283,7 +288,7 @@ export async function TopupByWallet(id: string | undefined, url: string) {
     await prisma.historyTopup.create({
       data: {
         amount: topupStatus.amount,
-        topupType: "Truemoney",
+        topupType: "ทรูวอลเลท",
         userId: id,
         reason: "เติมเงินจากระบบ",
         websiteId: identifyWebsite,
@@ -367,7 +372,7 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
       data: {
         amount: res.data.amount,
         reason: "เติมเงินจากระบบ",
-        topupType: "Bank",
+        topupType: "ธนาคาร",
         userId: id,
         websiteId: identifyWebsite,
       },

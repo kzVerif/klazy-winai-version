@@ -91,7 +91,7 @@ export function EditProductButton({ product }: { product: Products }) {
       <DialogContent className="max-w-md p-0">
         {/* Header */}
         <DialogHeader className="px-6 pt-6">
-          <DialogTitle>แก้ไขสินค้า</DialogTitle>
+          <DialogTitle className="text">แก้ไขสินค้า</DialogTitle>
           <DialogDescription>
             เปลี่ยนแปลงรายละเอียดของสินค้าชิ้นนี้
           </DialogDescription>

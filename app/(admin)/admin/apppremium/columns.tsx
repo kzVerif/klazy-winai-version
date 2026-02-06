@@ -16,6 +16,7 @@ export type AdminAppPremium = {
   price: Number;
   isDiscount: boolean;
   priceDiscount: Number;
+  byshopId: string
 };
 
 export const columns: ColumnDef<AdminAppPremium>[] = [

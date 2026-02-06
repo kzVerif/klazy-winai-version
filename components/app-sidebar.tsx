@@ -21,6 +21,7 @@ import {
   SourceCodeIcon,
   YoutubeIcon,
   RankingIcon,
+  Analytics02Icon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,7 +33,12 @@ const items = [
     url: "/admin/dashboard",
     icon: DashboardSquare02Icon,
   },
-    {
+   {
+    title: "รายงานยอดขาย",
+    url: "/admin/report",
+    icon: Analytics02Icon,
+  },
+  {
     title: "ตั้งค่าทั่วไป",
     url: "/admin/commonsetting",
     icon: Settings02Icon,
@@ -96,7 +102,6 @@ const items = [
     icon: RankingIcon,
   },
 
-
   // ----------------------
   // History zone
   // ----------------------
@@ -128,17 +133,31 @@ const items = [
     url: "/admin/historyorder",
     icon: Package01Icon,
   },
+
+  {
+    title: "ประวัติการใช้งานโค้ดเติมเงิน",
+    url: "/admin/historycode",
+    icon: Package01Icon,
+  },
+
+  {
+    title: "ประวัติการใช้งานโค้ดส่วนลด",
+    url: "/admin/historydiscountcode",
+    icon: Package01Icon,
+  },
 ];
 
-
-export function AppSidebar({logo} : {logo: string | null}) {
+export function AppSidebar({ logo }: { logo: string | null }) {
   return (
     <Sidebar className="top-0 z-50 h-full">
       <SidebarContent>
         <SidebarGroup className="gap-y-4">
           <SidebarGroupLabel className="py-3 text-lg">
             <Image
-              src={logo ?? "https://img5.pic.in.th/file/secure-sv1/ksrv-logo-trans.png"}
+              src={
+                logo ??
+                "https://img5.pic.in.th/file/secure-sv1/ksrv-logo-trans.png"
+              }
               width={32}
               height={32}
               alt="KSRV Logo"

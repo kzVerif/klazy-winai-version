@@ -10,9 +10,9 @@ import { redirect } from "next/navigation";
 export default async function page({ params }: { params: { id: string } }) {
   const { id } = await params;
 
-  const res = await fetch(`https://byshop.me/api/product?id=${id}`);
-  const product = await res.json();
   const app = await getAppPremiumById(id);
+  const res = await fetch(`https://byshop.me/api/product?id=${app?.byshopId}`);
+  const product = await res.json();
   const tw = await getWalletTopup();
 
   const statusApp = await getStatusAppremiumForUser();
@@ -99,9 +99,9 @@ export default async function page({ params }: { params: { id: string } }) {
             price={app.isDiscount ? app.priceDiscount : app.price}
             isDiscount={app.isDiscount}
             priceDiscount={app.priceDiscount}
-            feeAvailable={tw.feeAvailable} 
-            byshopId={app.byshopId}          
-            />
+            feeAvailable={tw.feeAvailable}
+            byshopId={app.byshopId}
+          />
 
           {/* ✅ รายละเอียดสินค้า */}
           <div className="border-t pt-6 text-black leading-relaxed whitespace-pre-line text-sm sm:text-base">

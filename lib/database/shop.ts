@@ -277,13 +277,21 @@ export async function buyProducts(
     // ✅ คำนวณส่วนลด
     const discountData = codeCheck?.data;
 
-    const totalPrice = discountData?.isPercent
+    const total = discountData?.isPercent
       ? Math.max(
           0,
           baseTotalPrice - baseTotalPrice * (Number(discountData.reward) / 100),
         )
       : Math.max(0, baseTotalPrice - Number(discountData?.reward ?? 0));
-
+    const rank  = await prisma.class.findFirst({
+      where: {
+        id: user.classId,
+        websiteId: identifyWebsite
+      }
+    })
+    
+    const totalPrice = Math.max(0,rank?.isPercent ? total - (total*rank.reward/100) : total- (rank?.reward ?? 0)
+)
     if (totalPrice > Number(user.points)) {
       return {
         status: false,

@@ -88,7 +88,7 @@ export function AddProductButton({
 
       <DialogContent className="max-w-md p-0">
         <DialogHeader className="px-6 pt-6">
-          <DialogTitle>เพิ่มสินค้าใหม่</DialogTitle>
+          <DialogTitle className="text">เพิ่มสินค้าใหม่</DialogTitle>
           <DialogDescription>
             กรอกรายละเอียดสินค้าเพื่อเพิ่มลงในระบบ
           </DialogDescription>

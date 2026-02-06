@@ -10,16 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { Copy01Icon, ViewIcon } from "@hugeicons/core-free-icons";
+import { ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AdminBuyProduct } from "@/app/(admin)/admin/historybuy/columns";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import toast from "react-hot-toast";
 import { BuyApp } from "@/app/history/premium/columns";
-import { Badge } from "../ui/badge";
 export function ViewHistoryBuyAppPremiumButton({
   product,
 }: {
@@ -28,11 +25,6 @@ export function ViewHistoryBuyAppPremiumButton({
   const date = new Date(product.createdAt);
   const formattedDate = format(date, "dd/MM/yyyy HH:mm");
 
-  const handleCopy = async (e: any) => {
-    e.preventDefault();
-    await navigator.clipboard.writeText(product.info);
-    toast.success("คัดลอกสำเร็จ");
-  };
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -73,6 +65,17 @@ export function ViewHistoryBuyAppPremiumButton({
               name="owner"
               defaultValue={product.user.username}
               type="text"
+              disabled
+            />
+          </div>
+
+          <div className="grid gap-3">
+            <Label htmlFor="price">ยอดชำระ</Label>
+            <Input
+              id="price"
+              name="price"
+              type="number"
+              defaultValue={product.price.toFixed(2)}
               disabled
             />
           </div>

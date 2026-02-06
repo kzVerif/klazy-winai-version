@@ -13,6 +13,7 @@ export type AdminBuyProduct = {
   stockId: string;
   productId: string;
   createdAt: Date;
+  price: number
   product: {
     categoryId: string;
     detail: string | null;

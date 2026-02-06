@@ -34,20 +34,20 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-//   const [filterValue, setFilterValue] = React.useState<string>("");
+  const [filterValue, setFilterValue] = React.useState<string>("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
- const [filterValue, setFilterValue] = React.useState<string>("");
+  const filteredData = React.useMemo(() => {
+    if (!filterValue) return data;
 
-const filteredData = React.useMemo(() => {
-  if (!filterValue) return data;
-
-  const lower = filterValue.toLowerCase();
-  return data.filter((item: any) =>
-    item.username.toLowerCase().includes(lower) ||
-    item.userClassName.toLowerCase().includes(lower) // ค้นหาจาก username เท่านั้น
-  );
-}, [filterValue, data]);
+    const lower = filterValue.toLowerCase();
+    return data.filter(
+      (item: any) =>
+        item.code.key.toLowerCase().includes(lower) ||
+        item.code.name.toLowerCase().includes(lower) ||
+        item.user.username.toLowerCase().includes(lower)
+    );
+  }, [filterValue, data]);
 
   const table = useReactTable({
     data: filteredData,
@@ -61,40 +61,16 @@ const filteredData = React.useMemo(() => {
     state: { sorting },
   });
 
-  /* Export CSV ด้วย PapaParse */
-  const handleExportCSV = () => {
-    if (!filteredData.length) return;
-
-    const csv = Papa.unparse(filteredData, {
-      quotes: true,
-      delimiter: ",",
-    });
-
-    const blob = new Blob(["\uFEFF" + csv], {
-      type: "text/csv;charset=utf-8;",
-    });
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "export.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div>
       <div className="flex items-center justify-end py-4 gap-3">
         <Input
-          placeholder="ค้นหา"
+          placeholder="ค้นหา รหัสโค้ด/คนที่ใช้โค้ด/ชื่อโค้ด"
           value={filterValue}
           onChange={(e) => setFilterValue(e.target.value)}
           className="max-w-sm focus"
         />
-
-        <Button onClick={handleExportCSV} className="btn-main">
-          ดาวน์โหลด CSV
-        </Button>
       </div>
 
       <div className="overflow-hidden rounded-md border">
@@ -132,7 +108,10 @@ const filteredData = React.useMemo(() => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   ไม่พบข้อมูล
                 </TableCell>
               </TableRow>
@@ -159,7 +138,8 @@ const filteredData = React.useMemo(() => {
 
         <div className="flex items-center gap-2">
           <span className="text-sm">
-            หน้าที่ {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
+            หน้าที่ {table.getState().pagination.pageIndex + 1}/
+            {table.getPageCount()}
           </span>
 
           <Button

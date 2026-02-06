@@ -79,14 +79,14 @@ export default function OrderSettingsForm({ data }: { data: any }) {
               variant={"secondary"}
               className="bg-emerald-500 text-white transition-all ease-in-out duration-300"
             >
-              เปิดการแนะนำสินค้าแอปพรีเมี่ยม
+              เปิดการแนะนำสินค้าพรีออเดอร์
             </Badge>
           ) : (
             <Badge
               variant={"outline"}
               className="transition-all ease-in-out duration-300"
             >
-              ปิดการแนะนำสินค้าแอปพรีเมี่ยม
+              ปิดการแนะนำสินค้าพรีออเดอร์
             </Badge>
           )}
         </Label>

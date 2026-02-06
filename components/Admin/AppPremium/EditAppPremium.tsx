@@ -25,6 +25,8 @@ import { useEffect } from "react";
 import { updateAppPremiumProduct } from "@/lib/database/apppremium";
 
 export function EditAppPremium({ product }: { product: AdminAppPremium }) {
+  console.log(product);
+  
   const [enabled, setEnabled] = useState(product.isDiscount);
   const [costPrice, setCostPrice] = useState<number>(
     Number(product.price) // fallback
@@ -39,7 +41,7 @@ export function EditAppPremium({ product }: { product: AdminAppPremium }) {
 
         // หา item ที่ id ตรงกัน
         const matched = data.find(
-          (item: any) => String(item.id) === String(product.id)
+          (item: any) => String(item.id) === String(product.byshopId)
         );
 
         if (matched) {
