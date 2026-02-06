@@ -10,6 +10,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import { requireAdmin } from "../requireAdmin";
 import { upgradeClass } from "./Class";
+import { da } from "date-fns/locale";
 
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default";
 
@@ -221,23 +222,16 @@ export async function updateUser(data: updateUser) {
         success: false,
         message: "ไม่สำเร็จ",
       };
-    }
-    const session = await getServerSession(authOptions)
-    if (session?.user.id !== data.id) {
-      return {
-        success: false,
-        message: "ไม่สำเร็จ",
-      };
-    }
+    }    
     await prisma.users.update({
-      where: { id: session?.user.id, websiteId: identifyWebsite },
+      where: { id: data.id, websiteId: identifyWebsite },
       data: {
         points: data.points,
         totalPoints: data.totalPoints,
         role: data.role,
       },
     });
-    await upgradeClass(session?.user.id)
+    await upgradeClass(data.id)
     revalidatePath("/admin/users");
   } catch (error) {
     console.log("updateUser Error: ", error);

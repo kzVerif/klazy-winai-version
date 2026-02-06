@@ -21,30 +21,36 @@ import { createOrderProduct } from "@/lib/database/orders";
 import { useState } from "react";
 
 export function AddOrdersProduct() {
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+  const [detail, setDetail] = useState("");
   // 2. เปลี่ยนชื่อฟังก์ชัน
-  async function handleAddProduct(formData: FormData) {
-    const name = String(formData.get("name") || "");
-    const detail = String(formData.get("detail") || "");
-    const image = String(formData.get("image") || "");
-
-    if (name === "" || !name || detail === "" || !detail || image === "" || !image) {
+  async function handleAddProduct() {
+    if (
+      name === "" ||
+      !name ||
+      detail === "" ||
+      !detail ||
+      image === "" ||
+      !image
+    ) {
       toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
 
     const data = {
-        name,
-        detail,
-        image,
-    }
-    setOpen(false);
+      name,
+      detail,
+      image,
+    };
 
     toast.promise(createOrderProduct(data), {
       loading: "กำลังบันทึก...",
       success: "บันทึกการสินค้าประเภทออเดอร์ใหม่สำเร็จ",
       error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
     });
+    setOpen(false);
   }
 
   return (
@@ -78,7 +84,11 @@ export function AddOrdersProduct() {
           <div className="grid gap-3">
             <Label htmlFor="name">ชื่อสินค้าประเภทออเดอร์</Label>
             {/* 9. ลบ defaultValue และเพิ่ม placeholder */}
-            <Input id="name" name="name" />
+            <Input
+              id="name"
+              name="name"
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
 
           <div className="grid gap-2">
@@ -103,6 +113,7 @@ export function AddOrdersProduct() {
         focus-visible:ring-offset-0
         text-sm
       "
+                onChange={(e) => setDetail(e.target.value)}
               />
             </ScrollArea>
           </div>
@@ -113,6 +124,7 @@ export function AddOrdersProduct() {
               id="image"
               name="image"
               type="text"
+              onChange={(e) => setImage(e.target.value)}
               // 11. ลบ defaultValue
             />
           </div>

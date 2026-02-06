@@ -16,12 +16,14 @@ import toast from "react-hot-toast";
 // 1. เปลี่ยนมาใช้ไอคอนจาก lucide-react
 import { Plus } from "lucide-react";
 import { createCategory } from "@/lib/database/category";
+import { useState } from "react";
 
 export function AddCategoriesButtron() {
+  const [name,setName] = useState("")
+  const [image,setImage] = useState("")
+  const [open,setOpen] = useState(false)
   // 2. เปลี่ยนชื่อฟังก์ชัน
-  async function handleAddProduct(formData: FormData) {
-    const name = String(formData.get("name") || "");
-    const image = String(formData.get("image") || "");
+  async function handleAddProduct() {
 
     if (name === "" || !name || image === "" || !image) {
       toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
@@ -33,10 +35,12 @@ export function AddCategoriesButtron() {
       success: "บันทึกการหมวดหมู่ใหม่สำเร็จ",
       error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
     });
+
+    setOpen(false)
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {/* 5. อัปเดตปุ่ม Trigger */}
         <Button
@@ -64,7 +68,7 @@ export function AddCategoriesButtron() {
           <div className="grid gap-3">
             <Label htmlFor="name">ชื่อหมวดหมู่</Label>
             {/* 9. ลบ defaultValue และเพิ่ม placeholder */}
-            <Input id="name" name="name" />
+            <Input id="name" name="name" onChange={(e)=> setName(e.target.value)} />
           </div>
 
           <div className="grid gap-3">
@@ -73,7 +77,7 @@ export function AddCategoriesButtron() {
               id="image"
               name="image"
               type="text"
-              // 11. ลบ defaultValue
+              onChange={(e)=> setImage(e.target.value)}
             />
           </div>
 

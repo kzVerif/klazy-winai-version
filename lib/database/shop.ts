@@ -89,6 +89,7 @@ export async function getProductById(id: string) {
 export async function getAllProducts() {
   try {
     const products = await prisma.products.findMany({
+      where: {websiteId: identifyWebsite},
       include: {
         category: true,
         _count: {
@@ -104,7 +105,9 @@ export async function getAllProducts() {
       },
     });
 
-    const categories = await prisma.categories.findMany();
+    const categories = await prisma.categories.findMany({where: {
+      websiteId: identifyWebsite
+    }});
 
     const plainProducts = products.map((item) => ({
       ...item,

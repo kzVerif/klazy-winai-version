@@ -10,23 +10,28 @@ import { updateShopSetting } from "@/lib/database/setting";
 
 export default function SettingsForm({ initialData }: { initialData: any }) {
   const [data, setData] = useState(initialData);
+  const [saving, setSaving] = useState(false);
 
   const handleChange = (key: string, value: string) => {
     setData((prev: any) => ({ ...prev, [key]: value }));
   };
 
   const handleSave = async () => {
-    console.log(data);
-    
-    toast.promise(updateShopSetting(data), {
-      success: "บันทึกการตั้งค่าสำเร็จ",
-      loading: "กำลังบันทึกการตั้งค่า...",
-      error: "เกิดข้อผิดพลาดในการบันทึก"
-    });
-  };
+    if (saving) return;
 
+    setSaving(true);
+    try {
+      await toast.promise(updateShopSetting(data), {
+        success: "บันทึกการตั้งค่าสำเร็จ",
+        loading: "กำลังบันทึกการตั้งค่า...",
+        error: "เกิดข้อผิดพลาดในการบันทึก",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24">
       {/* 🎨 สีร้าน */}
       <Card>
         <CardHeader>
@@ -63,142 +68,153 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
         </CardContent>
       </Card>
       <div className=" grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* 🌄 พื้นหลัง */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">พื้นหลังร้าน</h2>
+            <p className="text-sm text-muted-foreground">
+              แนบลิงก์รูปภาพพื้นหลัง (รองรับ .jpg .png)
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="https://example.com/background.jpg"
+              value={data.backgroundImage}
+              onChange={(e) => handleChange("backgroundImage", e.target.value)}
+            />
+          </CardContent>
+        </Card>
 
+        {/* 🔗 Webhook */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">Webhook Discord</h2>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="https://discord.com/api/webhooks/..."
+              value={data.webhookDiscord}
+              onChange={(e) => handleChange("webhookDiscord", e.target.value)}
+            />
+          </CardContent>
+        </Card>
 
+        {/* 🏪 ชื่อร้าน */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">ชื่อร้าน</h2>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="ชื่อร้านของคุณ"
+              value={data.shopName}
+              onChange={(e) => handleChange("shopName", e.target.value)}
+            />
+          </CardContent>
+        </Card>
 
-      {/* 🌄 พื้นหลัง */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">พื้นหลังร้าน</h2>
-          <p className="text-sm text-muted-foreground">
-            แนบลิงก์รูปภาพพื้นหลัง (รองรับ .jpg .png)
-          </p>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="https://example.com/background.jpg"
-            value={data.backgroundImage}
-            onChange={(e) => handleChange("backgroundImage", e.target.value)}
-          />
-        </CardContent>
-      </Card>
+        {/* 📢 ประกาศ */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">ประกาศหน้าร้าน</h2>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              placeholder="ข้อความประกาศ เช่น โปรโมชั่นลด 20%"
+              value={data.announcement}
+              onChange={(e) => handleChange("announcement", e.target.value)}
+            />
+          </CardContent>
+        </Card>
 
-      {/* 🔗 Webhook */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">Webhook Discord</h2>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="https://discord.com/api/webhooks/..."
-            value={data.webhookDiscord}
-            onChange={(e) => handleChange("webhookDiscord", e.target.value)}
-          />
-        </CardContent>
-      </Card>
+        {/* 🖼 Icon ร้าน */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">ลิงก์ Icon ร้าน</h2>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="https://example.com/icon.png"
+              value={data.icon}
+              onChange={(e) => handleChange("icon", e.target.value)}
+            />
+          </CardContent>
+        </Card>
 
-      {/* 🏪 ชื่อร้าน */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">ชื่อร้าน</h2>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="ชื่อร้านของคุณ"
-            value={data.shopName}
-            onChange={(e) => handleChange("shopName", e.target.value)}
-          />
-        </CardContent>
-      </Card>
+        {/* 🧩 Logo ร้าน */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">ลิงก์ Logo ร้าน</h2>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="https://example.com/logo.png"
+              value={data.logo}
+              onChange={(e) => handleChange("logo", e.target.value)}
+            />
+          </CardContent>
+        </Card>
+        {/* 🧩 Banner ร้าน */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">ลิงก์ Banner ร้าน</h2>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="https://example.com/logo.png"
+              value={data.banner}
+              onChange={(e) => handleChange("banner", e.target.value)}
+            />
+          </CardContent>
+        </Card>
 
-      {/* 📢 ประกาศ */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">ประกาศหน้าร้าน</h2>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            placeholder="ข้อความประกาศ เช่น โปรโมชั่นลด 20%"
-            value={data.announcement}
-            onChange={(e) => handleChange("announcement", e.target.value)}
-          />
-        </CardContent>
-      </Card>
+        {/* 📝 คำอธิบายร้าน */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">คำอธิบายร้าน</h2>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              placeholder="เกี่ยวกับร้านของคุณ เช่น สินค้า บริการ หรือสโลแกน"
+              value={data.detail}
+              onChange={(e) => handleChange("detail", e.target.value)}
+            />
+          </CardContent>
+        </Card>
 
-      {/* 🖼 Icon ร้าน */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">ลิงก์ Icon ร้าน</h2>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="https://example.com/icon.png"
-            value={data.icon}
-            onChange={(e) => handleChange("icon", e.target.value)}
-          />
-        </CardContent>
-      </Card>
-
-      {/* 🧩 Logo ร้าน */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">ลิงก์ Logo ร้าน</h2>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="https://example.com/logo.png"
-            value={data.logo}
-            onChange={(e) => handleChange("logo", e.target.value)}
-          />
-        </CardContent>
-      </Card>
-      {/* 🧩 Banner ร้าน */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">ลิงก์ Banner ร้าน</h2>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="https://example.com/logo.png"
-            value={data.banner}
-            onChange={(e) => handleChange("banner", e.target.value)}
-          />
-        </CardContent>
-      </Card>
-
-      {/* 📝 คำอธิบายร้าน */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">คำอธิบายร้าน</h2>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            placeholder="เกี่ยวกับร้านของคุณ เช่น สินค้า บริการ หรือสโลแกน"
-            value={data.detail}
-            onChange={(e) => handleChange("detail", e.target.value)}
-          />
-        </CardContent>
-      </Card>
-
-      {/* 📝 คำอธิบายร้าน */}
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold">ลิงก์ติดต่อร้าน</h2>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="ช่องทางการติดต่อร้านค้า"
-            value={data.contact}
-            onChange={(e) => handleChange("contact", e.target.value)}
-          />
-        </CardContent>
-      </Card>
-            </div>
+        {/* 📝 คำอธิบายร้าน */}
+        <Card>
+          <CardHeader>
+            <h2 className="font-semibold">ลิงก์ติดต่อร้าน</h2>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="ช่องทางการติดต่อร้านค้า"
+              value={data.contact}
+              onChange={(e) => handleChange("contact", e.target.value)}
+            />
+          </CardContent>
+        </Card>
+      </div>
 
       {/* SAVE BUTTON */}
-      <div className="flex justify-end gap-2 mb-4">
-        <Button onClick={handleSave} className="btn-main">
-          บันทึกการตั้งค่า
+      {/* SAVE BUTTON */}
+      <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-2">
+        {/* เพิ่ม Tooltip เล็กๆ หรือสถานะถ้าต้องการ (Optional) */}
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          size="lg" // ปรับให้ขนาดใหญ่ขึ้นหน่อยเพื่อให้กดง่าย
+          className="btn-main rounded-full shadow-2xl hover:scale-105 transition-transform active:scale-95"
+        >
+          {saving ? (
+            <span className="flex items-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+              กำลังบันทึก...
+            </span>
+          ) : (
+            "บันทึกการตั้งค่า"
+          )}
         </Button>
       </div>
     </div>
