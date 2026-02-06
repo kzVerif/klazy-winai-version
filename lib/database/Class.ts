@@ -146,8 +146,6 @@ export async function updateClassRank(data: any) {
 }
 
 export async function upgradeClass(userId: string) {
-  console.log(userId);
-
   try {
     await requireUser();
 
