@@ -42,6 +42,9 @@ export async function getHomepage() {
       },
     });
     const suggestProducts = await prisma.suggestProducts.findMany({
+      where: {
+        websiteId: identifyWebsite
+      },
       include: {
         product: {
           include: {

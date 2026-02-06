@@ -146,13 +146,10 @@ export async function updateClassRank(data: any) {
 }
 
 export async function upgradeClass(userId: string) {
+  console.log(userId);
+
   try {
     await requireUser();
-    const session = await getServerSession(authOptions);
-    
-    if (userId !== session?.user.id) {
-      return { success: false, message: "ตรวจพบการเข้าถึงที่ไม่ถูกต้อง" };
-    }
 
     // 1. ดึงข้อมูล User และ Rank ทั้งหมดมาเตรียมไว้
     // เรียง upgrade จากมากไปน้อย (desc) เพื่อเช็ค rank สูงสุดก่อน
@@ -167,13 +164,19 @@ export async function upgradeClass(userId: string) {
     ]);
 
     if (!user) return { success: false, message: "ไม่พบผู้ใช้ในระบบ" };
-    if (allRanks.length === 0) return { success: false, message: "ยังไม่มีระบบคลาสในขณะนี้" };
+    if (allRanks.length === 0)
+      return { success: false, message: "ยังไม่มีระบบคลาสในขณะนี้" };
 
     // 2. ค้นหา Rank ที่เหมาะสมที่สุดตามแต้มที่มี (Total Points)
-    const targetRank = allRanks.find((rank) => user.totalPoints >= rank.upgrade);
+    const targetRank = allRanks.find(
+      (rank) => user.totalPoints >= rank.upgrade,
+    );
 
     if (!targetRank) {
-      return { success: false, message: "แต้มของคุณยังไม่เพียงพอสำหรับการอัปเกรด" };
+      return {
+        success: false,
+        message: "แต้มของคุณยังไม่เพียงพอสำหรับการอัปเกรด",
+      };
     }
 
     // 3. ตรวจสอบว่า Rank ที่หาได้ สูงกว่า Rank ปัจจุบันหรือไม่ (ป้องกันการ downgrade)
@@ -190,13 +193,12 @@ export async function upgradeClass(userId: string) {
         userClassName: targetRank.className, // เก็บชื่อไว้แสดงผล (De-normalization)
       },
     });
-    revalidatePath("/profile")
-    revalidatePath("/admin/users")
+    revalidatePath("/profile");
+    revalidatePath("/admin/users");
     return {
       success: true,
       message: `คุณได้รับการอัปเกรดเป็นคลาส ${targetRank.className}`,
     };
-
   } catch (error) {
     console.error("Error upgradeClass: ", error);
     return { success: false, message: "เกิดข้อผิดพลาดทางเซิร์ฟเวอร์" };

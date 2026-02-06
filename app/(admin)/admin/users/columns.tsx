@@ -17,8 +17,12 @@ export type Users = {
 
 export const columns: ColumnDef<Users>[] = [
   {
-    accessorKey: "username",
-    header: "Username",
+    id: "username",
+    header: "ชื่อผู้ใช้",
+    cell: ({ row }) => {
+      const user = row.original.username;
+      return <div className="pl-2">{user}</div>;
+    },
   },
   {
     accessorKey: "points",

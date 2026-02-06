@@ -10,6 +10,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   Collapsible,
@@ -28,6 +29,7 @@ import {
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import { CustomTrigger } from "./CustomTrigger";
 
 const menuGroups = [
   {
@@ -85,7 +87,7 @@ const menuGroups = [
 
 export function AppSidebar({ logo }: { logo: string | null }) {
   return (
-    <Sidebar className="top-0 z-50 h-full">
+    <Sidebar collapsible="icon" className="border-r top-0 z-50 h-full">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="py-6 text-lg">
@@ -101,8 +103,12 @@ export function AppSidebar({ logo }: { logo: string | null }) {
             />
             จัดการร้านค้า
           </SidebarGroupLabel>
-
           <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip={"เปิดปิดเมนู"}>
+                <CustomTrigger />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             {menuGroups.map((group) => {
               // ถ้ามี items (กลุ่มเมนูเดี่ยว)
               if (group.items) {
