@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { UserIcon, LockIcon, Login02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";

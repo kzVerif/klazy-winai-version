@@ -1,4 +1,4 @@
-async function mustOk<T extends { success: boolean; message?: string }>(
+export async function mustOk<T extends { success: boolean; message?: string }>(
   p: Promise<T>
 ) {
   const res = await p;

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
 import { updateStatusAppremium } from "@/lib/database/apppremium";
 import { Input } from "@/components/ui/input";
+import { mustOk } from "@/lib/mustOk";
 
 export default function AppPremiumSetting({ data }: { data: any }) {
   const [enabled, setEnabled] = useState(data.status);

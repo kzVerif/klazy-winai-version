@@ -25,7 +25,7 @@ model Tenant {
 model Websites {
   id                      String                    @id @default(cuid())
   url                     String                    @unique
-  type                    String
+  type                    typeWebsite               @default(Other)
   tenantId                String
   expiresAt               DateTime?
   createdAt               DateTime                  @default(now())
@@ -500,4 +500,14 @@ model Settings {
   updatedAt       DateTime @default(now()) @updatedAt
   websiteId       String   @unique
   website         Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+}
+
+enum typeWebsite {
+  Valorant
+  Minecraft
+  Roblox
+  FiveM
+  Discord
+  Steam
+  Other
 }

@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { AdminAppPremium } from "@/app/(admin)/admin/apppremium/columns";
 import { useEffect } from "react";
 import { updateAppPremiumProduct } from "@/lib/database/apppremium";
+import { mustOk } from "@/lib/mustOk";
 
 export function EditAppPremium({ product }: { product: AdminAppPremium }) {
   console.log(product);

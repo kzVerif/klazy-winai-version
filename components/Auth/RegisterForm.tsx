@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { createUser } from "@/lib/database/users";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-
+import { mustOk } from "@/lib/mustOk";
 export default function RegisterForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
