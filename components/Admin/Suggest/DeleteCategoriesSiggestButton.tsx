@@ -16,11 +16,10 @@ import { deleteSuggestCategories } from "@/lib/database/suggestcategories";
 
 export function DeleteCategoriesSiggestButton({ id }: { id: string }) {
   async function handleDelete(id: string) {
-    console.log("Delete user:", id);
-    toast.promise(deleteSuggestCategories(id), {
+    toast.promise(mustOk(deleteSuggestCategories(id)), {
       loading: "กำลังลย...",
-      success: "ลบหมวดหมู่แนะนำสำเร็จ",
-      error: "ไม่สามารถลบหมดวหมู่แนะนำได้",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

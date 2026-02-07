@@ -25,10 +25,10 @@ import { deleteOrderPackageById } from "@/lib/database/OrderPackages";
 export function DeleteOrderPackage({ id }: { id: string }) {
   const [open, setOpen] = useState(false)
   function handleDelete(id: string) {
-    toast.promise(deleteOrderPackageById(id), {
-      loading: "กำลังลบ...",
-      success: "ลบแพ็คเกจสำเร็จ",
-      error: "ลบแพ็คเกจไม่สำเร็จ กรุณาลองใหม่",
+    toast.promise(mustOk(deleteOrderPackageById(id)), {
+      loading: "กำลังลบแพ้คเกจ...",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

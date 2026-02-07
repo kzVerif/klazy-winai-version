@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
-import { requireUser } from "../requireUser";
 import { requireAdmin } from "../requireAdmin";
 
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default";
@@ -67,9 +66,13 @@ export async function addSuggestProducts(id: string) {
     });
     revalidatePath("/admin/suggestproducts");
     revalidatePath("/");
+    return {
+        success: true,
+        message: "เพิ่มการแนะนำสินค้าสำเร็จ",
+      };
   } catch (error) {
     console.log("addSuggestProducts Error: ", error);
-    throw new Error("เกิดข้อผิดพลาดจากะรบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
@@ -90,8 +93,12 @@ export async function DeleteSuggestProduct(id: string) {
     });
     revalidatePath("/admin/suggestproducts");
     revalidatePath("/");
+     return {
+        success: true,
+        message: "ลบหมวดหมู่แนะนำสำเร็จ",
+      };
   } catch (error) {
     console.log("DeleteSuggestProduc: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }

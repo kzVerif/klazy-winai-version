@@ -32,17 +32,19 @@ export async function TopupBank(qrCode: string) {
       },
     });
 
-    // console.log(response.data);
-
     return response.data;
   } catch (error: any) {
     if (error.response) {
       console.error("Slip2Go Error:", error.response.data);
-      throw new Error(
-        error.response.data.message || "Slip verification failed"
-      );
+      return {
+      status: false,
+      reason: error.response.data,
+    };
     }
     console.error("Network Error:", error.message);
-    throw new Error("ไม่สามารถเชื่อมต่อกับระบบตรวจสอบสลิปได้");
+     return {
+      status: false,
+      reason: "ไม่สามารตติดต่อกับ server ได้",
+    };
   }
 }

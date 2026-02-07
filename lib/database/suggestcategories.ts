@@ -1,7 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import prisma from "./conn";
-import { requireUser } from "../requireUser";
 import { requireAdmin } from "../requireAdmin";
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default";
 
@@ -22,9 +21,13 @@ export async function addSuggestCategories(id: string) {
     });
     revalidatePath("/admin/suggestproducts");
     revalidatePath("/");
+    return {
+          success: false,
+          message: "เพิ่มการแนะนำหมวดหมู่สำเร็จ"
+        }
   } catch (error) {
     console.log("addSuggestCategories Error: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
@@ -65,8 +68,12 @@ export async function deleteSuggestCategories(id: string) {
     });
     revalidatePath("/admin/suggestproducts")
     revalidatePath("/")
+    return {
+      success: true,
+      message: "ลบหมวดหมู่แนะนำสำเร็จ"
+    }
   } catch (error) {
     console.log("deleteSuggestCategories Error: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }

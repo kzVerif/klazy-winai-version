@@ -38,10 +38,10 @@ const handleSubmit = async (e: React.FormEvent) => {
     };
 
     // ส่วนนี้ไม่ต้องแก้ ใช้งานได้เลยถ้า Backend ถูกแก้ไข
-    await toast.promise(ChangePassword(data), {
+    await toast.promise(mustOk(ChangePassword(data)), {
       loading: "กำลังเปลี่ยนรหัสผ่าน...",
-      success: "เปลี่ยนรหัสผ่านสำเร็จ!",
-      error: (err) => err?.message || "เกิดข้อผิดพลาด",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   };
 

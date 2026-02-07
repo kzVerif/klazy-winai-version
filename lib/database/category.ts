@@ -56,10 +56,13 @@ export async function createCategory(data: Categories) {
     revalidatePath("/admin/suggestproducts");
     revalidatePath("/categories");
     revalidatePath("/");
-    return updated;
+    return {
+        success: true,
+        message: "สร้างหมวดหมู่ใหม่สำเร็จ",
+      };
   } catch (error) {
     console.log("CreateCategory Error: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
@@ -72,17 +75,20 @@ export async function deleteCategory(id: string) {
         message: "ไม่สำเร็จ",
       };
     }
-    const deleted = await prisma.categories.delete({
+    await prisma.categories.delete({
       where: { id: id, websiteId: identifyWebsite },
     });
     revalidatePath("/admin/categories");
     revalidatePath("/admin/suggestproducts");
     revalidatePath("/categories");
     revalidatePath("/");
-    return deleted;
+    return {
+        success: true,
+        message: "ลบหมวดหมู่สำเร็จ",
+      };
   } catch (error) {
     console.log("deleteCategory Error: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
@@ -95,7 +101,7 @@ export async function updateCategory(data: Categories) {
         message: "ไม่สำเร็จ",
       };
     }
-    const updated = await prisma.categories.update({
+    await prisma.categories.update({
       where: { id: data.id, websiteId: identifyWebsite },
       data: {
         name: data.name,
@@ -106,10 +112,13 @@ export async function updateCategory(data: Categories) {
     revalidatePath("/admin/suggestproducts");
     revalidatePath("/categories");
     revalidatePath("/");
-    return updated;
+     return {
+        success: true,
+        message: "อัปเดทหมวดหมู่สำเร็จ",
+      };
   } catch (error) {
     console.log("updateCategory Error: ", error);
-    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 

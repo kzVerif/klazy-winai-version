@@ -76,10 +76,10 @@ export function EditAppPremium({ product }: { product: AdminAppPremium }) {
       isDiscount: enabled,
     };
 
-    toast.promise(updateAppPremiumProduct(updateData), {
+    toast.promise(mustOk(updateAppPremiumProduct(updateData)), {
       loading: "กำลังบันทึก...",
-      success: "บันทึกการแก้ไขสำเร็จ",
-      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
 
     setOpen(false);

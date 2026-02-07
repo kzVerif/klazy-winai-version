@@ -24,8 +24,16 @@ export async function createOrderPackage(data: any) {
       },
     });
     revalidatePath(`/admin/orders/${data.orderProductId}`);
+    return {
+      success: true,
+      message: "แก้ไขแพ็คเกจสำเร็จ"
+    }
   } catch (error) {
     console.log("error createOrderPackage : ", error);
+    return {
+      success: false,
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์"
+    }
   }
 }
 
@@ -77,8 +85,16 @@ export async function updateOrderPackageById(data: any) {
       },
     });
     revalidatePath(`/admin/orders/${data.id}`);
+    return {
+      success: true,
+      message: "บบแพ็คเกจสำเร็จ"
+    }
   } catch (error) {
     console.log("updateOrderPackageById Error: ", error);
+    return {
+      success: false,
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์"
+    }
   }
 }
 
@@ -98,7 +114,15 @@ export async function deleteOrderPackageById(id: string) {
       },
     });
     revalidatePath(`/admin/orders/${pkg.orderProductId}`);
+    return {
+      success: true,
+      message: "ลบแพ็คเกจสำเร็จ"
+    }
   } catch (error) {
     console.log("Error deleteOrderPackageById: ", error);
+    return {
+      success: false,
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์"
+    }
   }
 }

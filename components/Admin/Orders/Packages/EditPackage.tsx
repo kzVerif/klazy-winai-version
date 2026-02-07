@@ -63,8 +63,8 @@ export function EditPackages({ Orderpackage }: { Orderpackage: any }) {
       id: id,
     };
 
-    toast.promise(updateOrderPackageById(data), {
-      loading: "กำลังแก้ไข Packages",
+    toast.promise(mustOk(updateOrderPackageById(data)), {
+      loading: "กำลังแก้ไขแพ็คเกจ...",
       success: "แก้ไข Packages สำเร็จ",
       error: "ไม่สามารถแก้ไข Packages ได้ ลองใหม่อีกครั้ง",
     });

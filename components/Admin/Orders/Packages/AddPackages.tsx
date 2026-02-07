@@ -51,10 +51,10 @@ export function AddPackages({id}: {id: string}) {
       orderProductId: id
     };
 
-    toast.promise(createOrderPackage(data), {
-      loading: "กำลังสร้าง Packages ใหม่",
-      success: "สร้าง Packages ใหม่สำเร็จ",
-      error: "ไม่สามารถสร้าง Packages ใหม่ได้ ลองใหม่อีกครั้ง",
+    toast.promise(mustOk(createOrderPackage(data)), {
+      loading: "กำลังสร้างแพ็คเกจใหม่...",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

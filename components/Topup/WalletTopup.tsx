@@ -23,17 +23,11 @@ export default function WalletTopup() {
       return
     }    
     
-    toast.loading("กำลังเติมเงิน...")
-    const status = await TopupByWallet(session?.user.id, link)
-    console.log("status in WAlletTopup",status);
-    
-    if (!status?.status) {
-      toast.dismiss()
-      toast.error(status?.message)
-      return
-    }
-
-    toast.success("เติมเงินสำเร็จ")
+    toast.promise(mustOk(TopupByWallet(session?.user.id, link)),{
+      loading: 'กำลังเติมเงิน...',
+      success: (r) => r.message,
+      error: (e) => e.message,
+    })
     setLink(""); // เคลียร์ช่องหลังส่ง
     await refreshUser();
   };

@@ -22,10 +22,10 @@ export function EditCategoriesButton({ category }: { category: Categories }) {
     const name = String(formData.get("name") || "");
     const image = String(formData.get("image") || "");
 
-    toast.promise(updateCategory({ id: category.id, name, image }), {
+    toast.promise(mustOk(updateCategory({ id: category.id, name, image })), {
       loading: "กำลังบันทึก...",
-      success: "บันทึกการแก้ไขหมวดหมู่สำเร็จ",
-      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

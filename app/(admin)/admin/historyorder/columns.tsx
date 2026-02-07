@@ -35,8 +35,8 @@ export type OderProductAdmin = {
     totalPoints: number;
     createdAt: Date;
     websiteId: string;
-    classId: string,
-    userClassName: string
+    classId: string;
+    userClassName: string;
   };
   orderProduct: {
     id: string;
@@ -157,8 +157,8 @@ export const columns: ColumnDef<OderProductAdmin>[] = [
         {column.getIsSorted() === "asc"
           ? "↑"
           : column.getIsSorted() === "desc"
-          ? "↓"
-          : ""}
+            ? "↓"
+            : ""}
       </button>
     ),
     cell: ({ row }) => {

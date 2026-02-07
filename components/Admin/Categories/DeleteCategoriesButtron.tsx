@@ -18,10 +18,10 @@ import { Badge } from "@/components/ui/badge";
 export function DeleteCategoriesButton({ id }: { id: string }) {
   async function handleDelete(id: string) {
     console.log("Delete user:", id);
-    toast.promise(deleteCategory(id), {
+    toast.promise(mustOk(deleteCategory(id)), {
       loading: "กำลังลบ...",
-      success: "ลบหมวดหมู่สำเร็จ",
-      error: "ลบไม่สำเร็จ กรุณาลองใหม่",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

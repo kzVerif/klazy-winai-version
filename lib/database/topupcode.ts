@@ -5,7 +5,9 @@ import prisma from "./conn";
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default";
 
 export async function getTopupCode() {
-  let code = await prisma.topupCode.findFirst({where: { websiteId: identifyWebsite }});
+  let code = await prisma.topupCode.findFirst({
+    where: { websiteId: identifyWebsite },
+  });
 
   if (!code) {
     return { available: false };
@@ -15,23 +17,25 @@ export async function getTopupCode() {
 
 export async function updateTopupCode(data: { available: boolean }) {
   try {
-            const canUse = await requireAdmin();
-      if (!canUse) {
-        return {
-          success: false,
-          message: "ไม่สำเร็จ"
-        }
-      }
-    const updatedCode = await prisma.topupCode.update({
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
+    }
+    await prisma.topupCode.update({
       where: { websiteId: identifyWebsite },
       data: {
         available: data.available,
       },
     });
-    return updatedCode;
-    
+     return {
+        success: true,
+        message: "อัปเดทการเติมเงินผ่านโค้ดสำเร็จ",
+      };
   } catch (error) {
     console.log("Error updating topup code:", error);
-    throw error;
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }

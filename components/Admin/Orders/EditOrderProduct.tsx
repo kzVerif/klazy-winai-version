@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 // 1. เปลี่ยนมาใช้ไอคอนจาก lucide-react
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { createOrderProduct, updateOrderProduct } from "@/lib/database/orders";
+import { updateOrderProduct } from "@/lib/database/orders";
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { PencilEdit02Icon } from "@hugeicons/core-free-icons";
@@ -56,10 +56,10 @@ export function EditOrderProduct({ order }: { order: any }) {
 
     setOpen(false);
 
-    toast.promise(updateOrderProduct(data), {
-      loading: "กำลังบันทึก...",
-      success: "แก้ไขสินค้าประเภทออเดอร์สำเร็จ",
-      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+    toast.promise(mustOk(updateOrderProduct(data)), {
+      loading: "กำลังบันทึกสินค้าพรีออเดอร์...",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

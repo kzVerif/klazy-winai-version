@@ -107,11 +107,14 @@ export async function buyOrderProduct(
   userInfo: any,
   code: string = "",
 ) {
-  await requireUser();
+    const canuse = await requireUser();
+  if (!canuse) {
+    return { success: false, message: "ไม่สามารถใช้งานได้" }
+  }
   const session = await getServerSession(authOptions);
 
   if (userId !== session?.user.id) {
-    throw new Error("ทำไรครับเนี่ย");
+    return { success: false };
   }
 
   try {
@@ -367,8 +370,16 @@ export async function updatetOrderSetting(updatedData: any) {
         image: updatedData.image,
       },
     });
+    return {
+      success: true,
+      message: "อัปเดทสินค้าพรีออเดอร์สำเร็จ",
+    };
   } catch (error) {
     console.log("error updatetOrderSetting : ", error);
+    return {
+      success: true,
+      message: "เกิดข้อผืดพลาดฝั่งเซิฟเวอร์",
+    };
   }
 }
 
@@ -390,8 +401,16 @@ export async function createOrderProduct(data: any) {
       },
     });
     revalidatePath("/admin/orders");
+    return {
+      success: true,
+      message: "สร้างสินค้าพรีออเดอร์สำเร็จ",
+    };
   } catch (error) {
     console.log("error createOrderProduct : ", error);
+     return {
+      success: true,
+      message: "เกิดข้อผืดพลาดฝั่งเซิฟเวอร์",
+    };
   }
 }
 
@@ -432,8 +451,16 @@ export async function updateOrderProduct(data: any) {
       },
     });
     revalidatePath("/admin/orders");
+    return {
+      success: true,
+      message: "แก้ไขสินค้าพรีออเดอร์สำเร็จ",
+    };
   } catch (error) {
     console.log("error updateOrderProduct : ", error);
+     return {
+      success: false,
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์",
+    };
   }
 }
 
@@ -453,8 +480,16 @@ export async function deleteOrderProduct(id: string) {
       },
     });
     revalidatePath("/admin/orders");
+    return {
+      success: true,
+      message: "ลบสินค้าพรีออเดอร์สำเร็จ",
+    };
   } catch (error) {
     console.log("error deleteOrderProduct : ", error);
+    return {
+      success: false,
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์",
+    };
   }
 }
 

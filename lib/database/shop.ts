@@ -89,7 +89,7 @@ export async function getProductById(id: string) {
 export async function getAllProducts() {
   try {
     const products = await prisma.products.findMany({
-      where: {websiteId: identifyWebsite},
+      where: { websiteId: identifyWebsite },
       include: {
         category: true,
         _count: {
@@ -105,9 +105,11 @@ export async function getAllProducts() {
       },
     });
 
-    const categories = await prisma.categories.findMany({where: {
-      websiteId: identifyWebsite
-    }});
+    const categories = await prisma.categories.findMany({
+      where: {
+        websiteId: identifyWebsite,
+      },
+    });
 
     const plainProducts = products.map((item) => ({
       ...item,
@@ -150,9 +152,13 @@ export async function updateProduct(data: updateProduct) {
     revalidatePath(`/categories/${data.categoriesId}`);
     revalidatePath("/products");
     revalidatePath("/");
+    return {
+      success: true,
+      message: "แก้ไขสินค้าสำเร็จ",
+    };
   } catch (error) {
     console.log("updateProduct Error: ", error);
-    throw new Error("เกิดข้อผืดพลาดจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
@@ -182,9 +188,13 @@ export async function createProducts(data: productData) {
     revalidatePath(`/categories/${data.categoriesId}`);
     revalidatePath("/products");
     revalidatePath("/");
+    return {
+      success: true,
+      message: "สร้างสินค้าสำเร็จ",
+    };
   } catch (error) {
     console.log("createProducts Error: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
@@ -205,9 +215,13 @@ export async function deleteProduct(id: string) {
     revalidatePath(`/categories/${product.categoryId}`);
     revalidatePath("/products");
     revalidatePath("/");
+    return {
+      success: true,
+      message: "ลบสินค้าสำเร็จ",
+    };
   } catch (error) {
     console.log("deleteProduct Error: ", error);
-    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
@@ -218,13 +232,24 @@ export async function buyProducts(
   code: string = "",
 ) {
   try {
-    await requireUser();
+    const q = Number(quantity);
+
+    if (!Number.isInteger(q) || q <= 0) {
+      return {
+        success: false,
+        message: "จำนวนสินค้าต้องเป็นจำนวนเต็มมากกว่า 0",
+      };
+    }
+    const canuse = await requireUser();
+    if (!canuse) {
+      return { success: false, message: "ไม่สามารถใช้งานได้" };
+    }
 
     // ✅ ป้องกัน userId ปลอม (เหมือนที่ทำในฟังก์ชันอื่น ๆ)
     const session = await getServerSession(authOptions);
     if (session?.user.id !== userId) {
       return {
-        status: false,
+        success: false,
         message: "ทำไรครับเนี่ย",
       };
     }
@@ -240,7 +265,7 @@ export async function buyProducts(
 
     if (!user || !product) {
       return {
-        status: false,
+        success: false,
         message: "ไม่พบผู้ใช้หรือสินค้าที่ระบุ",
       };
     }
@@ -261,7 +286,7 @@ export async function buyProducts(
 
       if (!codeCheck.success) {
         return {
-          status: false,
+          success: false,
           message: codeCheck.message,
         };
       }
@@ -271,7 +296,7 @@ export async function buyProducts(
 
       if (!used.success) {
         return {
-          status: false,
+          success: false,
           message: used.message,
         };
       }
@@ -286,18 +311,22 @@ export async function buyProducts(
           baseTotalPrice - baseTotalPrice * (Number(discountData.reward) / 100),
         )
       : Math.max(0, baseTotalPrice - Number(discountData?.reward ?? 0));
-    const rank  = await prisma.class.findFirst({
+    const rank = await prisma.class.findFirst({
       where: {
         id: user.classId,
-        websiteId: identifyWebsite
-      }
-    })
-    
-    const totalPrice = Math.max(0,rank?.isPercent ? total - (total*rank.reward/100) : total- (rank?.reward ?? 0)
-)
+        websiteId: identifyWebsite,
+      },
+    });
+
+    const totalPrice = Math.max(
+      0,
+      rank?.isPercent
+        ? total - (total * rank.reward) / 100
+        : total - (rank?.reward ?? 0),
+    );
     if (totalPrice > Number(user.points)) {
       return {
-        status: false,
+        success: false,
         message: "ยอดเงินของคุณไม่เพียงพอ กรุณาเติมเงิน",
       };
     }
@@ -310,11 +339,12 @@ export async function buyProducts(
         websiteId: identifyWebsite,
       },
       take: quantity,
+      orderBy: { createdAt: "asc" },
     });
 
-    if (stocks.length < quantity) {
+    if (stocks.length !== q) {
       return {
-        status: false,
+        success: false,
         message: "จำนวนสินค้าที่ต้องการซื้อมีไม่เพียงพอ",
       };
     }
@@ -401,13 +431,13 @@ export async function buyProducts(
     revalidatePath("/");
 
     return {
-      status: true,
+      success: true,
       message: "ซื้อสินค้าสำเร็จ",
     };
   } catch (error: any) {
     console.log("buyProducts Error:", error.message || error);
     return {
-      status: false,
+      success: false,
       message: "เกิดข้อผิดพลากจากระบบ",
     };
   }

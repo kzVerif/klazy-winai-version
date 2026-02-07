@@ -1,15 +1,16 @@
 "use server";
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default_site";
-import { getServerSession } from "next-auth";
 import { requireAdmin } from "../requireAdmin";
 import { requireUser } from "../requireUser";
 import prisma from "./conn";
 import { revalidatePath } from "next/cache";
-import { authOptions } from "../auth";
 
 export async function getAllClassRank() {
   try {
-    await requireUser();
+      const canuse = await requireUser();
+  if (!canuse) {
+    return []
+  }
     const rank = await prisma.class.findMany({
       where: {
         websiteId: identifyWebsite,
@@ -147,7 +148,10 @@ export async function updateClassRank(data: any) {
 
 export async function upgradeClass(userId: string) {
   try {
-    await requireUser();
+      const canuse = await requireUser();
+  if (!canuse) {
+    return { success: false, message: "ไม่สามารถใช้งานได้" }
+  }
 
     // 1. ดึงข้อมูล User และ Rank ทั้งหมดมาเตรียมไว้
     // เรียง upgrade จากมากไปน้อย (desc) เพื่อเช็ค rank สูงสุดก่อน

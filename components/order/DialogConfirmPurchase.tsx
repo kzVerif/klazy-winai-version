@@ -126,7 +126,7 @@ export default function DialogConfirmPurchase({
       }
 
       if (!codeCheck.data) {
-         setDiscountInfo(null);
+        setDiscountInfo(null);
         toast.error("ไม่พบข้อมูลโค้ดส่วนลด");
         return;
       }
@@ -157,29 +157,24 @@ export default function DialogConfirmPurchase({
     if (isSubmitting) return;
 
     setIsSubmitting(true);
-    const loadingId = toast.loading("กำลังสั่งซื้อสินค้า...");
-
     try {
-      const result = await buyOrderProduct(
-        selectedPackage,
-        session.user.id,
-        userInfo,
-        code.trim(),
+      toast.promise(
+        mustOk(
+          buyOrderProduct(
+            selectedPackage,
+            session.user.id,
+            userInfo,
+            code.trim(),
+          ),
+        ),
+        {
+          loading: "กำลังสั่งซื้อสินค้า...",
+          success: (r) => r.message,
+          error: (e) => e.message,
+        },
       );
-
-      toast.dismiss(loadingId);
-
-      if (!result?.success) {
-        toast.error(result?.message ?? "สั่งซื้อไม่สำเร็จ");
-        return;
-      }
-
-      toast.success(result.message ?? "สั่งซื้อสำเร็จ");
       setOpenConfirm(false);
-      await refreshUser()
-    } catch (e) {
-      toast.dismiss(loadingId);
-      toast.error("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      await refreshUser();
     } finally {
       setIsSubmitting(false);
     }
@@ -214,137 +209,137 @@ export default function DialogConfirmPurchase({
               </DialogDescription>
             </DialogTitle>
           </DialogHeader>
-           <ScrollArea className="max-h-[70vh]">
-          <div className="grid grid-cols-1 gap-4 mt-2 text-neutral-600">
-            {/* ข้อมูลคำสั่งซื้อ */}
-            <div className="bg-neutral-100/70 rounded-xl p-4 space-y-1.5 font-medium">
-              <div className="flex items-center gap-1.5 mb-3">
-                <HugeiconsIcon icon={User02Icon} strokeWidth={2} />{" "}
-                ข้อมูลคำสั่งซื้อ
-              </div>
-
-              <div className="flex justify-between">
-                ไอดีเกม:
-                <span className="text-black">{userInfo.id_user}</span>
-              </div>
-
-              <div className="flex justify-between">
-                รหัสผ่าน:
-                <span className="text-black flex gap-1.5">
-                  {showPassword ? userInfo.password_user : "••••••••"}
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                ช่องทางติดต่อ:
-                <span className="text-black">{userInfo.contact_user}</span>
-              </div>
-            </div>
-
-            {/* แพ็คสินค้าที่เลือก */}
-            <div className="bg-blue-50 border-1 border-blue-200 rounded-xl p-4 space-y-1.5 font-medium">
-              <div className="flex justify-between">
-                <div className="flex gap-2">
-                  <HugeiconsIcon icon={MagicWand02Icon} strokeWidth={2} />{" "}
-                  แพ็คสินค้าที่เลือก
+          <ScrollArea className="max-h-[70vh]">
+            <div className="grid grid-cols-1 gap-4 mt-2 text-neutral-600">
+              {/* ข้อมูลคำสั่งซื้อ */}
+              <div className="bg-neutral-100/70 rounded-xl p-4 space-y-1.5 font-medium">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <HugeiconsIcon icon={User02Icon} strokeWidth={2} />{" "}
+                  ข้อมูลคำสั่งซื้อ
                 </div>
-                <span className="text-black">{selectedPackage?.name}</span>
-              </div>
-            </div>
 
-            {/* ✅ ใหม่: โค้ดส่วนลด (พรีเมี่ยม แต่เข้ากับดีไซน์เดิม) */}
-            <div className="bg-neutral-100/50 rounded-xl p-4 space-y-2.5 font-medium">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-neutral-800">โค้ดส่วนลด</span>
+                <div className="flex justify-between">
+                  ไอดีเกม:
+                  <span className="text-black">{userInfo.id_user}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  รหัสผ่าน:
+                  <span className="text-black flex gap-1.5">
+                    {showPassword ? userInfo.password_user : "••••••••"}
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  ช่องทางติดต่อ:
+                  <span className="text-black">{userInfo.contact_user}</span>
+                </div>
+              </div>
+
+              {/* แพ็คสินค้าที่เลือก */}
+              <div className="bg-blue-50 border-1 border-blue-200 rounded-xl p-4 space-y-1.5 font-medium">
+                <div className="flex justify-between">
+                  <div className="flex gap-2">
+                    <HugeiconsIcon icon={MagicWand02Icon} strokeWidth={2} />{" "}
+                    แพ็คสินค้าที่เลือก
+                  </div>
+                  <span className="text-black">{selectedPackage?.name}</span>
+                </div>
+              </div>
+
+              {/* ✅ ใหม่: โค้ดส่วนลด (พรีเมี่ยม แต่เข้ากับดีไซน์เดิม) */}
+              <div className="bg-neutral-100/50 rounded-xl p-4 space-y-2.5 font-medium">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-neutral-800">โค้ดส่วนลด</span>
+                    {discountInfo ? (
+                      <Badge className="bg-emerald-500 text-white">
+                        ใช้งานแล้ว
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline">ยังไม่ใช้</Badge>
+                    )}
+                  </div>
+
                   {discountInfo ? (
-                    <Badge className="bg-emerald-500 text-white">
-                      ใช้งานแล้ว
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline">ยังไม่ใช้</Badge>
-                  )}
+                    <button
+                      type="button"
+                      onClick={clearDiscount}
+                      className="text-xs text-neutral-500 hover:text-red-500 duration-200"
+                    >
+                      ล้างโค้ด
+                    </button>
+                  ) : null}
                 </div>
+
+                <form onSubmit={handleApplyCode} className="flex gap-2">
+                  <Input
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="กรอกโค้ดส่วนลด"
+                    className="h-10 bg-white"
+                    disabled={isCheckingCode || isSubmitting}
+                  />
+                  <Button
+                    type="submit"
+                    className="h-10 btn-main"
+                    disabled={isCheckingCode || isSubmitting || !code.trim()}
+                  >
+                    {isCheckingCode ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        ตรวจสอบ...
+                      </span>
+                    ) : (
+                      "ตรวจสอบ"
+                    )}
+                  </Button>
+                </form>
 
                 {discountInfo ? (
-                  <button
-                    type="button"
-                    onClick={clearDiscount}
-                    className="text-xs text-neutral-500 hover:text-red-500 duration-200"
-                  >
-                    ล้างโค้ด
-                  </button>
-                ) : null}
+                  <div className="text-xs text-emerald-700 font-semibold">
+                    ใช้โค้ด: {discountInfo.key}{" "}
+                    {discountInfo.percent ? `ลด ${discountInfo.percent}%` : ""}
+                    {discountInfo.amount ? `ลด ฿${discountInfo.amount}` : ""}
+                  </div>
+                ) : (
+                  <div className="text-xs text-neutral-500">
+                    กรอกโค้ดแล้วกดตรวจสอบ เพื่อรับส่วนลด (ถ้ามี)
+                  </div>
+                )}
               </div>
 
-              <form onSubmit={handleApplyCode} className="flex gap-2">
-                <Input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="กรอกโค้ดส่วนลด"
-                  className="h-10 bg-white"
-                  disabled={isCheckingCode || isSubmitting}
-                />
-                <Button
-                  type="submit"
-                  className="h-10 btn-main"
-                  disabled={isCheckingCode || isSubmitting || !code.trim()}
-                >
-                  {isCheckingCode ? (
-                    <span className="inline-flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      ตรวจสอบ...
-                    </span>
-                  ) : (
-                    "ตรวจสอบ"
-                  )}
-                </Button>
-              </form>
+              {/* ชำระเงิน */}
+              <div className="bg-emerald-50 border-1 border-emerald-600 rounded-xl p-4 space-y-1.5 font-semibold text-xl text-emerald-900">
+                <div className="flex justify-between">
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon icon={Wallet01Icon} strokeWidth={2.5} />{" "}
+                    ยอดชำระ
+                  </div>
 
-              {discountInfo ? (
-                <div className="text-xs text-emerald-700 font-semibold">
-                  ใช้โค้ด: {discountInfo.key}{" "}
-                  {discountInfo.percent ? `ลด ${discountInfo.percent}%` : ""}
-                  {discountInfo.amount ? `ลด ฿${discountInfo.amount}` : ""}
-                </div>
-              ) : (
-                <div className="text-xs text-neutral-500">
-                  กรอกโค้ดแล้วกดตรวจสอบ เพื่อรับส่วนลด (ถ้ามี)
-                </div>
-              )}
-            </div>
-
-            {/* ชำระเงิน */}
-            <div className="bg-emerald-50 border-1 border-emerald-600 rounded-xl p-4 space-y-1.5 font-semibold text-xl text-emerald-900">
-              <div className="flex justify-between">
-                <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={Wallet01Icon} strokeWidth={2.5} />{" "}
-                  ยอดชำระ
-                </div>
-
-                <div className="text-right">
-                  {discountInfo ? (
-                    <div className="space-y-0.5">
-                      <div className="text-xs font-semibold text-neutral-500 line-through">
-                        ฿ {price.toLocaleString()}
+                  <div className="text-right">
+                    {discountInfo ? (
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-semibold text-neutral-500 line-through">
+                          ฿ {price.toLocaleString()}
+                        </div>
+                        <div className="text-emerald-900">
+                          ฿ {finalPrice.toLocaleString()}
+                        </div>
                       </div>
-                      <div className="text-emerald-900">
-                        ฿ {finalPrice.toLocaleString()}
-                      </div>
-                    </div>
-                  ) : (
-                    <>฿ {price.toLocaleString()}</>
-                  )}
+                    ) : (
+                      <>฿ {price.toLocaleString()}</>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </ScrollArea>
 
           <DialogFooter className="mt-2 space-x-1">

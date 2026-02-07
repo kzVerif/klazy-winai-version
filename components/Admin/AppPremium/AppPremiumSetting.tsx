@@ -29,10 +29,10 @@ export default function AppPremiumSetting({ data }: { data: any }) {
       isSuggest,
     };
 
-    toast.promise(updateStatusAppremium(updateData), {
+    toast.promise(mustOk(updateStatusAppremium(updateData)), {
       loading: "กำลังบันทึก...",
-      success: "บันทึกการตั้งค่าการขายแอปพรีเมียมสำเร็จ",
-      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   };
 

@@ -57,7 +57,7 @@ export async function updateStocksById(data: Stocks) {
     revalidatePath("/");
   } catch (error) {
     console.log("editStocksById Error: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false };
   }
 }
 
@@ -94,7 +94,7 @@ export async function addStocks(data: UpdatedStocks[]) {
     revalidatePath("/");
   } catch (error) {
     console.log("addStocks Error: ", error);
-    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+    return { success: false };
   }
 }
 

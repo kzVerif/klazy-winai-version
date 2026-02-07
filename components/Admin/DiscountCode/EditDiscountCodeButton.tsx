@@ -149,16 +149,11 @@ export default function EditDiscountCodeButton({ code }: { code: any }) {
       orderProduct,
     };
 
-    const loadingToast = toast.loading("กำลังบันทึกการแก้ไข...");
-    const s = await updateDiscountCode(payload);
-    toast.dismiss(loadingToast);
-
-    if (!s?.success) {
-      toast.error(s?.message || "บันทึกไม่สำเร็จ");
-      return;
-    }
-
-    toast.success("บันทึกการแก้ไขสำเร็จ");
+    toast.promise(mustOk(updateDiscountCode(payload)),{
+      loading: "กำลังบันทึกการแก้ไข...",
+      success: (r) => r.message,
+      error: (e) => e.message,
+    })
     setOpen(false);
   }
 

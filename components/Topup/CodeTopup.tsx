@@ -25,14 +25,11 @@ export default function CodeTopup() {
       return;
     }
 
-    const loadingToast = toast.loading("กำลังเติมเงิน...");
-    const s = await TopupByCode(session.user.id, code.trim());
-    toast.dismiss(loadingToast);
-    if (!s.status) {
-      toast.error(s.message || "เติมเงินไม่สำเร็จ");
-      return;
-    }
-    toast.success(s.message || "เติมเงินสำเร็จ");
+    toast.promise(mustOk(TopupByCode(session.user.id, code.trim())), {
+      loading: "กำลังเติมเงิน...",
+      success: (r) => r.message,
+      error: (e) => e.message,
+    });
     await refreshUser();
     setCode("");
     return;
@@ -50,7 +47,11 @@ export default function CodeTopup() {
         <div className="relative">
           {/* ไอคอนใน input */}
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <HugeiconsIcon icon={CouponPercentIcon} className="text-gray-400" size={20} />
+            <HugeiconsIcon
+              icon={CouponPercentIcon}
+              className="text-gray-400"
+              size={20}
+            />
           </div>
 
           <input

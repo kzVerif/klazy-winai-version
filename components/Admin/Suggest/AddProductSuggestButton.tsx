@@ -38,10 +38,10 @@ export function AddProductSuggestButton({
     }
 
     // 3. เปลี่ยนข้อความ Toast
-    toast.promise(addSuggestProducts(product), {
+    toast.promise(mustOk(addSuggestProducts(product)), {
       loading: "กำลังบันทึก...",
-      success: "บันทึกสินค้าแนะนำสำเร็จ",
-      error: "ไม่สามารถบันทึกสินค้าแนะนำได้",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

@@ -16,11 +16,10 @@ import { DeleteSuggestProduct } from "@/lib/database/suggestproducts";
 
 export function DeleteProductSuggest({ id }: { id: string }) {
   async function handleDelete(id: string) {
-    console.log("Delete user:", id);
-    toast.promise(DeleteSuggestProduct(id), {
+    toast.promise(mustOk(DeleteSuggestProduct(id)), {
       loading: "กำลังลยสินค้าแนะนำ...",
-      success: "ลบสินค้าแนะนำสำเร็จ",
-      error: "ไม่สามารถลบสินค้าแนะนำได้"
+      success: (r) => r.message,
+      error: (e) => e.message,
     })
   }
 

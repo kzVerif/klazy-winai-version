@@ -20,28 +20,43 @@ export default function LoginForm() {
   }, [session, status, router]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-    const res = await signIn("credentials", {
-      redirect: false,
-      username,
-      password,
-    });
+  toast
+    .promise(
+      (async () => {
+        const res = await signIn("credentials", {
+          redirect: false,
+          username,
+          password,
+        });
 
-    setLoading(false);
-    if (res?.error) {
-      toast.error(res.error || "เข้าสู่ระบบไม่สำเร็จ");
-    } else if (res?.ok) {
-      toast.success("เข้าสู่ระบบสำเร็จ!");
+        if (!res?.ok) {
+          throw new Error(res?.error || "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+        }
+
+        return res;
+      })(),
+      {
+        loading: "กำลังเข้าสู่ระบบ...",
+        success: "เข้าสู่ระบบสำเร็จ!",
+        error: (err) => err.message,
+      }
+    )
+    .then(() => {
       setTimeout(() => {
         window.location.href = "/";
-      }, 1000);
-    }
-  };
+      }, 800);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+};
+
 
   return (
     <div className="w-full max-w-sm mx-auto">

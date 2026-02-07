@@ -38,16 +38,16 @@ export function EditButton({ user }: { user: Users }) {
     const role = selectedRole === "" ? user.role : selectedRole;
 
     toast.promise(
-      updateUser({
+      mustOk(updateUser({
         id: user.id,
         points: point,
         totalPoints: totalTopup,
         role,
-      }),
+      })),
       {
         loading: "กำลังอัพเดทผู้ใช้...",
-        success: "อัพเดทสำเร็จ",
-        error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+        success: (r) => r.message,
+        error: (e) => e.message,
       },
     );
   }

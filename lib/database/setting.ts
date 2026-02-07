@@ -38,13 +38,13 @@ export async function getShopSettings() {
 
 export async function updateShopSetting(data: any) {
   try {
-            const canUse = await requireAdmin();
-      if (!canUse) {
-        return {
-          success: false,
-          message: "ไม่สำเร็จ"
-        }
-      }
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
+    }
     await prisma.settings.update({
       where: {
         id: data.id,
@@ -67,15 +67,21 @@ export async function updateShopSetting(data: any) {
     });
     revalidatePath("/");
     revalidatePath("/admin/commonsetting");
+    return {
+      success: true,
+      message: "แก้ไขการตั้งค่าทัั่วไปสำเร็จ",
+    };
   } catch (error) {
     console.log("updateShopSetting Error: ", error);
-    return {};
+    return {
+      success: false,
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์",
+    };
   }
 }
 
 export async function getColorSetting() {
   try {
-    await requireUser();
     const setting = await prisma.settings.findUnique({
       where: {
         websiteId: identifyWebsite,

@@ -45,10 +45,10 @@ export function AddOrdersProduct() {
       image,
     };
 
-    toast.promise(createOrderProduct(data), {
+    toast.promise(mustOk(createOrderProduct(data)), {
       loading: "กำลังบันทึก...",
-      success: "บันทึกการสินค้าประเภทออเดอร์ใหม่สำเร็จ",
-      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
     setOpen(false);
   }

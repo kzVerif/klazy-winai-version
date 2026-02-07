@@ -15,11 +15,10 @@ import { deleteUSer } from "@/lib/database/users";
 
 export function DeleteButton({ id }: { id: string }) {
   function handleDelete(id: string) {
-    console.log("Delete user:", id);
-    toast.promise(deleteUSer(id),{
+    toast.promise(mustOk(deleteUSer(id)),{
       loading: "กำลังลบ...",
-      success: "ลบผู้ใช้สำเร็จ",
-      error: "ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
+      success: (r) => r.message,
+      error: (e) => e.message,
     })
   }
 

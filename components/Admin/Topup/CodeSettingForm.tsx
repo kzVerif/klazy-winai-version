@@ -18,10 +18,10 @@ export default function CodeSettinngForm({ data }: { data: any }) {
       available: enabled,
     };
 
-    toast.promise(updateTopupCode(updateData), {
+    toast.promise(mustOk(updateTopupCode(updateData)), {
       loading: "กำลังบันทึก...",
-      success: "บันทึกการตั้งค่าการเติมเงินผ่านโค้ดสำเร็จ",
-      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   };
 

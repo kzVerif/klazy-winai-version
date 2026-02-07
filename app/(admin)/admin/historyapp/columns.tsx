@@ -30,10 +30,6 @@ export type BuyApp = {
 };
 
 export const columns: ColumnDef<BuyApp>[] = [
-  // {
-  //   accessorKey: "id",
-  //   header: "รหัสคำสั่งซื้อ",
-  // },
   {
     accessorFn: (row) => row.appPremium.name,
     header: "ชื่อสินค้า",
@@ -55,6 +51,15 @@ export const columns: ColumnDef<BuyApp>[] = [
         title={row.original.user.username}
       >
         {row.original.user.username}
+      </span>
+    ),
+  },
+    {
+    accessorFn: (row) => row.price,
+    header: "ยอดชำระ",
+    cell: ({ row }) => (
+      <span className="font-bold text-primary">
+        ฿{row.original.price.toLocaleString()}
       </span>
     ),
   },

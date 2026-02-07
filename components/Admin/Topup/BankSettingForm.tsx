@@ -37,11 +37,11 @@ export default function BankSettingForm({ data }: { data:  Bank }) {
   };
 
   toast.promise(
-    updateBankTopup(updateData),
+    mustOk((updateBankTopup(updateData))),
     {
       loading: "กำลังบันทึก...",
-      success: "บันทึกการตั้งค่าการเติมเงินผ่านธนาคารสำเร็จ",
-      error:   "บันทึกไม่สำเร็จ กรุณาลองใหม่"
+      success: (r) => r.message,
+      error: (e) => e.message,
     }
   );
 };

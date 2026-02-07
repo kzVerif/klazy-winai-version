@@ -26,10 +26,10 @@ export default function OrderSettingsForm({ data }: { data: any }) {
       isSuggest,
     };
 
-    toast.promise(updatetOrderSetting(updateData), {
+    toast.promise(mustOk(updatetOrderSetting(updateData)), {
       loading: "กำลังบันทึก...",
-      success: "บันทึกการตั้งค่าการขายสินค้าพรีออเดอร์สำเร็จ",
-      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   };
 

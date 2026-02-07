@@ -76,7 +76,7 @@ export async function createDiscountCode(data: any) {
     console.log("Error createDiscountCode: ", error);
     return {
       success: false,
-      message: "สร้างโค้ดไม่สำเร็จเกิดปัญหาบนเซิฟเวอร์",
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์",
     };
   }
 }
@@ -148,13 +148,16 @@ export async function deleteDiscountcode(dCodeId: string) {
     console.log("Error deleteDiscountcode: ", error);
     return {
       success: false,
-      message: "ลบโค้ดไม่สำเร็จเกิดปัญหาบนเซิฟเวอร์",
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์",
     };
   }
 }
 
 export async function checkDiscountcode(key: string, prodId: string) {
-  await requireUser()
+    const canuse = await requireUser();
+  if (!canuse) {
+    return { success: false, message: "ไม่สามารถใช้งานได้" }
+  }
   try {
     const haveKey = await prisma.discountCode.findFirst({
       where: {

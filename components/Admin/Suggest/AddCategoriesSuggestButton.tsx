@@ -38,10 +38,10 @@ export function AddCategoriesSuggestButton({
       return;
     }
 
-    toast.promise(addSuggestCategories(categoryId), {
+    toast.promise(mustOk(addSuggestCategories(categoryId)), {
       loading: "กำลังบันทึก...",
-      success: "เพิ่มหมวดหมู่แนะนำสำเร็จ",
-      error: "ไม่สามารถเพิ่มหมวดหมู่แนะนำได้",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

@@ -62,10 +62,10 @@ async function handleAddProduct(e: React.FormEvent<HTMLFormElement>) {
       reward: rewardNum,
     };
     
-      await toast.promise(updateClassRank(data), {
-        success: "แก้ไขคลาสสำเร็จ",
+      await toast.promise(mustOk(updateClassRank(data)), {
         loading: "กำลังแก้ไขคลาส...",
-        error: "แก้ไขคลาสไม่สำเร็จ",
+        success: (r) => r.message,
+        error: (e) => e.message,
       });
       
       // ปิด Modal เมื่อสำเร็จเท่านั้น (หรือจะปิดเลยก็ได้ตาม UX ที่ต้องการ)

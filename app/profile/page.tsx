@@ -1,8 +1,7 @@
-import UpgradeRank from "@/components/Profile/UpgradeRank";
 import { authOptions } from "@/lib/auth";
 import { getAllClassRank } from "@/lib/database/Class";
 import { getUserById } from "@/lib/database/users";
-import { User, Shield, Calendar, ArrowRight, Lock } from "lucide-react";
+import { User, Shield, Calendar, Lock } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 

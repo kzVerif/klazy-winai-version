@@ -1,6 +1,5 @@
 "use server"
 import { requireAdmin } from "../requireAdmin";
-import { requireUser } from "../requireUser";
 import prisma from "./conn";
 export interface Wallet {
   id: string;
@@ -44,7 +43,7 @@ export async function updateWalletTopup(data: Wallet) {
           }
     const wallet = await getWalletTopup();
     if (wallet.id === "") {
-      throw new Error("ไม่พบการตั้งค่า");
+      return { success: false, message: "ไม่พบการตั้งค่า" }
     }
     const updated = await prisma.topupTruemoney.update({
       where: { id: wallet.id, websiteId: identifyWebsite },
@@ -54,9 +53,9 @@ export async function updateWalletTopup(data: Wallet) {
         phone: data.phone,
       },
     });
-    return updated;
+    return { success: true, message: "อัปเดทการเติมเงินผ่านวอลเลทสำเร็จ" }
   } catch (error) {
     console.log("updateWakketTopup Error: ", error);
-    throw new Error("เกิดข้อผืดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผืดพลาดจากระบบ" }
   }
 }

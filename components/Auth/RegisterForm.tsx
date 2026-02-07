@@ -25,49 +25,15 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  // const validate = () => {
-  //   // Username 6-20 ตัว, ตัวอักษรและตัวเลข
-  //   const usernameRegex = /^[a-zA-Z0-9]{6,20}$/;
-  //   if (!usernameRegex.test(username)) {
-  //     toast.error(
-  //       "Username ต้องมี 6-20 ตัวอักษร และใช้ตัวอักษร A-Z, a-z, 0-9 เท่านั้น"
-  //     );
-  //     return false;
-  //   }
-
-  //   // Password: 8-32 ตัว, มีพิมพ์ใหญ่, พิมพ์เล็ก, ตัวเลข, special char
-  //   const passwordRegex =
-  //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,32}$/;
-  //   if (!passwordRegex.test(password)) {
-  //     toast.error(
-  //       "Password ต้องมี 8-32 ตัวอักษร มีพิมพ์ใหญ่ พิมพ์เล็ก ตัวเลข และอักขระพิเศษ (!@#$%^&*)"
-  //     );
-  //     return false;
-  //   }
-
-  //   // Confirm password ต้องตรงกับ password
-  //   if (password !== confirm) {
-  //     toast.error("รหัสผ่านไม่ตรงกัน");
-  //     return false;
-  //   }
-
-  //   return true;
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // if (!validate()) return;
-
-    toast.loading("กำลังสมัครสมาชิก...");
-    const status = await createUser({ username, password });
-    toast.dismiss();
-
-    if (!status.success) {
-      return toast.error(status.message ?? "เกิดข้อผิดพลาดจากระบบ");
-    }
-
-    toast.success("สมัครสมาชิกสำเร็จ!");
+    toast.promise(mustOk(createUser({ username, password })),{
+      loading: "กำลังสมัครสมาชิก...",
+      success: (r) => r.message,
+      error: (e) => e.message,
+      
+    })
     setTimeout(() => router.push("/login"), 1000);
   };
 

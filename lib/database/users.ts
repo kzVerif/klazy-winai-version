@@ -10,7 +10,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import { requireAdmin } from "../requireAdmin";
 import { upgradeClass } from "./Class";
-import { da } from "date-fns/locale";
 
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default";
 
@@ -26,7 +25,7 @@ export async function createUser(userData: authData) {
     });
 
     if (haveUser) {
-      throw new Error("มีผู้ใช้นี้แล้วในระบบ");
+      return { success: false, message: "มีผู้ใช้นี้แล้วในระบบ" };
     }
 
     const hashPassword = await bcrypt.hash(userData.password, 10);
@@ -34,12 +33,12 @@ export async function createUser(userData: authData) {
     const rank = await prisma.class.findFirst({
       where: {
         websiteId: identifyWebsite,
-        id: `rank-${identifyWebsite}`
-      }
-    })
+        id: `rank-${identifyWebsite}`,
+      },
+    });
 
     if (!rank) {
-      return {success: false,  message: "ไม่พบแรงก์ที่กำหนด" }
+      return { success: false, message: "ไม่พบแรงก์ที่กำหนด" };
     }
 
     const user = await prisma.users.create({
@@ -50,7 +49,7 @@ export async function createUser(userData: authData) {
         totalPoints: 0, // ใส่ 0 ให้ Decimal
         websiteId: identifyWebsite,
         classId: rank?.id,
-        userClassName: rank?.className
+        userClassName: rank?.className,
       },
     });
 
@@ -74,14 +73,14 @@ export async function createUser(userData: authData) {
     });
 
     revalidatePath("/admin/users");
-    return { success: true, user: user };
+    return { success: true, message: "สมัครสมาชิกสำเร็จ" };
   } catch (error: any) {
     if (error.code === "P2002" && error.meta?.target?.includes("username")) {
       return { success: false, message: "มีผู้ใช้นี้แล้วในระบบ" };
     }
 
     console.error("Create user error:", error);
-    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดจากระบบ" };
   }
 }
 
@@ -134,22 +133,25 @@ export async function ChangePassword(userData: {
   newPassword: string;
 }) {
   try {
-    await requireUser();
+    const canuse = await requireUser();
+    if (!canuse) {
+      return { success: false, message: "ไม่สามารถใช้งานได้" };
+    }
     const session = await getServerSession(authOptions);
     if (session?.user.id !== userData.userId) {
-      throw new Error("อะไรครับเนี่ย");
+      return { success: false, message: "อะไรครับเนี่ย" };
     }
     const user = await prisma.users.findUnique({
       where: { id: userData.userId, websiteId: identifyWebsite },
     });
 
     if (!user) {
-      throw new Error("ไม่พบผู้ใช้");
+      return { success: false, message: "ไม่พบผู้ใช้" };
     }
 
     const isMatch = await bcrypt.compare(userData.oldPassword, user.password);
     if (!isMatch) {
-      throw new Error("รหัสผ่านเดิมไม่ถูกต้อง");
+      return { success: false, message: "รหัสผ่านเดิมไม่ถูกต้อง" };
     }
 
     const isSamePassword = await bcrypt.compare(
@@ -157,7 +159,10 @@ export async function ChangePassword(userData: {
       user.password,
     );
     if (isSamePassword) {
-      throw new Error("รหัสผ่านใหม่ต้องไม่เหมือนรหัสผ่านเดิม");
+      return {
+        success: false,
+        message: "รหัสผ่านใหม่ต้องไม่เหมือนรหัสผ่านเดิม",
+      };
     }
     // ---
 
@@ -168,7 +173,7 @@ export async function ChangePassword(userData: {
       data: { password: hashedPassword },
     });
 
-    return { success: true };
+    return { success: true, message: "เปลียนรหัสผ่านสำเร็จ" };
   } catch (error) {
     console.error("Change Password Error:", error);
 
@@ -176,11 +181,11 @@ export async function ChangePassword(userData: {
     // โยน error ต่อเพื่อให้ toast.promise รับได้
     if (error instanceof Error) {
       // โยน message ที่เรากำหนดเอง (เช่น "รหัสผ่านเดิมไม่ถูกต้อง")
-      throw new Error(error.message);
+      return { success: false, message: error.message };
     }
 
     // สำหรับ error ที่ไม่คาดคิดอื่นๆ (เช่น DB ล่ม)
-    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดจากระบบ" };
     // ---
   }
 }
@@ -222,7 +227,7 @@ export async function updateUser(data: updateUser) {
         success: false,
         message: "ไม่สำเร็จ",
       };
-    }    
+    }
     await prisma.users.update({
       where: { id: data.id, websiteId: identifyWebsite },
       data: {
@@ -231,11 +236,15 @@ export async function updateUser(data: updateUser) {
         role: data.role,
       },
     });
-    await upgradeClass(data.id)
+    await upgradeClass(data.id);
     revalidatePath("/admin/users");
+    return {
+      success: true,
+      message: "แก้ไขผู้ใช้สำเร็จ",
+    };
   } catch (error) {
     console.log("updateUser Error: ", error);
-    throw new Error("เกิดข้อผิดพลาดจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดจากระบบ" };
   }
 }
 
@@ -252,22 +261,28 @@ export async function deleteUSer(id: string) {
       where: { id: id },
     });
     revalidatePath("/admin/users");
+    return {
+      success: true,
+      message: "ลบผู้ใช้สำเร็จ",
+    };
   } catch (error) {
     console.log("deleteUSer Error: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลากจากระบบ" };
   }
 }
 
 export async function TopupByWallet(id: string | undefined, url: string) {
   const topupStatus = await walletTopup(url);
   try {
-    await requireUser();
+    const canuse = await requireUser();
+    if (!canuse) {
+      return { success: false, message: "ไม่สามารถใช้งานได้" };
+    }
     if (!topupStatus.status || !id) {
       return {
-        status: false,
+        success: false,
         message: topupStatus.reason,
       };
-      // throw new Error(topupStatus.reason);
     }
 
     const user = await prisma.users.update({
@@ -321,13 +336,13 @@ export async function TopupByWallet(id: string | undefined, url: string) {
     });
     revalidatePath("/admin/users");
     return {
-      status: true,
+      success: false,
       message: `เติมเงินจำนวน ${topupStatus.amount ?? 0} บาท สำเร็จ`,
     };
   } catch (error) {
     console.log("Topup Error: ", error);
     return {
-      status: false,
+      success: false,
       message: topupStatus.reason ?? "เกิดข้อผิดพลาดจากระบบ",
     };
   }
@@ -336,18 +351,21 @@ export async function TopupByWallet(id: string | undefined, url: string) {
 export async function TopupByBank(id: string | undefined, qrCode: string) {
   const res = await TopupBank(qrCode);
 
-  await requireUser();
+  const canuse = await requireUser();
+  if (!canuse) {
+    return { success: false, message: "ไม่สามารถใช้งานได้" };
+  }
 
   if (!res || !id) {
     return {
-      status: false,
+      success: false,
       message: res.message,
     };
   }
 
   if (res.code !== "200200") {
     return {
-      status: false,
+      success: false,
       message: res.message,
     };
   }
@@ -404,13 +422,13 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
     });
 
     return {
-      status: true,
+      success: true,
       message: `เติมเงินจำนวน ${res.data.amount} บาท สำเร็จ`,
     };
   } catch (error) {
     console.log("TopupByBank DB Error:", error);
     return {
-      status: false,
+      success: false,
       message: res.message ?? "เกิดข้อผิดพลาดจากระบบ",
     };
   }
@@ -418,7 +436,19 @@ export async function TopupByBank(id: string | undefined, qrCode: string) {
 
 export async function getUserById(id: string) {
   try {
-    await requireUser();
+    const canuse = await requireUser();
+    if (!canuse) {
+      return {
+      id: "",
+      username: "",
+      role: "",
+      points: 0,
+      totalPoints: 0,
+      userClassName: "",
+      classId: "",
+      createdAt: new Date(),
+    };
+    }
     const user = await prisma.users.findUnique({
       where: { id: id, websiteId: identifyWebsite },
       select: {
@@ -433,16 +463,16 @@ export async function getUserById(id: string) {
       },
     });
     if (!user) {
-          return {
-      id: "",
-      username: "",
-      role: "",
-      points: 0,
-      totalPoints: 0,
-      userClassName: "",
-      classId: "",
-      createdAt: new Date()
-    };
+      return {
+        id: "",
+        username: "",
+        role: "",
+        points: 0,
+        totalPoints: 0,
+        userClassName: "",
+        classId: "",
+        createdAt: new Date(),
+      };
     }
 
     return user;
@@ -456,17 +486,16 @@ export async function getUserById(id: string) {
       totalPoints: 0,
       userClassName: "",
       classId: "",
-      createdAt: new Date()
+      createdAt: new Date(),
     };
   }
 }
 
 export async function TopupByCode(id: string | undefined, key: string) {
-  await requireUser();
+  const canuse = await requireUser().catch(() => false);
+  if (!canuse) return { success: false, message: "ไม่สามารถใช้งานได้" };
 
-  if (!id) {
-    return { status: false, message: "ไม่พบผู้ใช้สำหรับการเติมโค้ด" };
-  }
+  if (!id) return { success: false, message: "ไม่พบผู้ใช้สำหรับการเติมโค้ด" };
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -474,94 +503,79 @@ export async function TopupByCode(id: string | undefined, key: string) {
         where: { key, websiteId: identifyWebsite },
       });
 
-      if (!code) {
-        return { status: false, message: "ไม่พบโค้ดในระบบ" };
-      }
-
-      // ห้ามใช้ซ้ำ (แก้เงื่อนไขให้ถูก)
-      if (!code.canDuplicateUse) {
-        const isUsed = await tx.historyCode.findFirst({
-          where: { userId: id, codeId: code.id, websiteId: identifyWebsite },
-        });
-
-        if (isUsed) {
-          return { status: false, message: "คุณใช้โค้ดนี้ไปแล้ว" };
-        }
-      }
+      if (!code) return { success: false, message: "ไม่พบโค้ดในระบบ" };
 
       // ใช้เต็มแล้ว
       if (code.currentUse >= code.maxUse) {
         return {
-          status: false,
+          success: false,
           message: `จำนวนการใช้งานครบแล้ว ${code.currentUse}/${code.maxUse}`,
         };
       }
 
       // หมดอายุ
       if (new Date() > new Date(code.expired)) {
-        return { status: false, message: "โค้ดนี้หมดอายุแล้ว" };
+        return { success: false, message: "โค้ดนี้หมดอายุแล้ว" };
+      }
+
+      // ห้ามใช้ซ้ำ (ครั้งเดียวต่อ user)
+      if (!code.canDuplicateUse) {
+        const isUsed = await tx.historyCode.findFirst({
+          where: { userId: id, codeId: code.id, websiteId: identifyWebsite },
+        });
+        if (isUsed) return { success: false, message: "คุณใช้โค้ดนี้ไปแล้ว" };
       }
 
       const reward = Number(code.reward);
 
-      // อัปเดต user, อัปเดต code, สร้าง history ทั้งหมดใน transaction
       const user = await tx.users.update({
         where: { id, websiteId: identifyWebsite },
-        data: {
-          points: { increment: reward },
-        },
+        data: { points: { increment: reward } },
       });
-
-      const plainUser = {
-        ...user,
-        points: Number(user.points),
-        totalPoints: Number(user.totalPoints),
-      };
 
       await tx.code.update({
         where: { key, websiteId: identifyWebsite },
         data: { currentUse: { increment: 1 } },
       });
 
-      // เก็บประวัติ "ใช้โค้ดนี้"
       await tx.historyCode.create({
-        data: {
-          userId: id,
-          codeId: code.id,
-          websiteId: identifyWebsite,
-        },
+        data: { userId: id, codeId: code.id, websiteId: identifyWebsite },
       });
 
       return {
-        status: true,
+        success: true,
         message: `เติมโค้ดสำเร็จ คุณได้รับพ้อยท์จำนวน ${reward} บาทแล้ว`,
-        plainUser,
         reward,
+        user: {
+          ...user,
+          points: Number(user.points),
+          totalPoints: Number(user.totalPoints),
+        },
       };
     });
 
-    // result.status === false คือ error logic (ไม่ใช่ระบบล่ม)
-    if (!result.status) return result;
+    // ถ้า transaction บอกว่าไม่สำเร็จ ก็คืนกลับไปเลย (ไม่ต้องทำ 500)
+    if (!result.success) return result;
 
-    // Send Discord log
-    await sendDiscordWebhook({
+    // ส่ง webhook “หลัง” สำเร็จ (ถ้าส่งไม่ผ่าน ไม่ควรทำให้เติมเงินล้ม)
+    sendDiscordWebhook({
       username: "ระบบการเงิน",
       embeds: [
         {
           title: "💰 มีรายการเติมเงินจากโค้ด!",
           color: 2299548,
           fields: [
-            { name: "👤 ผู้ใช้", value: result?.plainUser?.username },
+            { name: "👤 ผู้ใช้", value: result?.user?.username },
             { name: "💵 จำนวนเงิน", value: `${result.reward} ฿` },
             { name: "🔑 โค้ด", value: key },
           ],
         },
       ],
-    });
+    }).catch(() => {});
 
     return result;
   } catch (err) {
     console.log("TopupByCode Error:", err);
-    return { status: false, message: "เกิดข้อผิดพลาดในระบบ" };
+    return { success: false, message: "เกิดข้อผิดพลาดในระบบ" };
   }
 }

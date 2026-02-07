@@ -8,7 +8,10 @@ const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default";
 
 export async function getHistoryTopupByUserId(id: string) {
   try {
-    await requireUser()
+      const canuse = await requireUser();
+  if (!canuse) {
+    return []
+  }
         const session = await getServerSession(authOptions)
         if (id !== session?.user.id) {
           return []

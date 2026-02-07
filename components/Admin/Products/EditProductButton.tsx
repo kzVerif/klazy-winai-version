@@ -62,7 +62,7 @@ export function EditProductButton({ product }: { product: Products }) {
     }
 
     toast.promise(
-      updateProduct({
+     mustOk(updateProduct({
         id,
         name,
         price,
@@ -71,11 +71,11 @@ export function EditProductButton({ product }: { product: Products }) {
         categoriesId: selectedCategory,
         isDiscount: enabled,
         priceDiscount: enabled ? priceDiscount : 0,
-      }),
+      })),
       {
-        loading: "กำลังบันทึก...",
-        success: "บันทึกการแก้ไขสินค้าสำเร็จ",
-        error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+        loading: "กำลังแก้ไขสินค้า...",
+        success: (r) => r.message,
+      error: (e) => e.message,
       }
     );
   }

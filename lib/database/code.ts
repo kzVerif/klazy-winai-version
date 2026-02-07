@@ -96,7 +96,7 @@ export async function updateCode(data: any) {
     }
     return {
       success: true,
-      message: "อัพเดทโค้ดไม่สำเร็จ",
+      message: "เกิดข้อผิดพลากฝั่งเซิฟเวอร์",
     };
   }
 }
@@ -126,7 +126,7 @@ export async function deleteCode(id: string) {
 
     return {
       success: true,
-      message: "ลบโค้ดไม่สำเร็จ",
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์",
     };
   }
 }

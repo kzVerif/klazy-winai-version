@@ -6,24 +6,25 @@ import { requireAdmin } from "../requireAdmin";
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default_site";
 
 export interface Bank {
-  id: string
-  bankAccount: string
-  bankName: string
-  bankProvider: string
-  available: boolean
+  id: string;
+  bankAccount: string;
+  bankName: string;
+  bankProvider: string;
+  available: boolean;
 }
-
 
 export async function updateBankTopup(data: Bank) {
   try {
-          const canUse = await requireAdmin();
-  if (!canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ"
+    const canUse = await requireAdmin();
+    if (!canUse) {
+      return {
+        success: false,
+        message: "ไม่สำเร็จ",
+      };
     }
-  }
-    const bank = await prisma.topupBank.findUnique({where: { websiteId: identifyWebsite }});
+    const bank = await prisma.topupBank.findUnique({
+      where: { websiteId: identifyWebsite },
+    });
     await prisma.topupBank.update({
       where: { id: bank?.id },
       data: {
@@ -33,20 +34,21 @@ export async function updateBankTopup(data: Bank) {
         available: data.available,
       },
     });
-    revalidatePath("/admin/commonsetting")
-    revalidatePath("/topup/bank")
-    return { success: true };
+    revalidatePath("/admin/commonsetting");
+    revalidatePath("/topup/bank");
+    return { success: true, message: "อัปเดทการเติมเงินผ่านธนาคารสำเร็จ" };
   } catch (error) {
     console.log("updateBankTopup Error: ", error);
-    throw new Error("เกิดข้อผิดพลากจากระบบ");
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
 export async function getBankTopup(): Promise<Bank> {
   try {
-    const bankData = await prisma.topupBank.findUnique({where: { websiteId: identifyWebsite }});
+    const bankData = await prisma.topupBank.findUnique({
+      where: { websiteId: identifyWebsite },
+    });
     if (!bankData) {
-      
       return {
         id: "",
         bankAccount: "ไม่พบการตั้งค่า",
@@ -68,4 +70,3 @@ export async function getBankTopup(): Promise<Bank> {
     };
   }
 }
-

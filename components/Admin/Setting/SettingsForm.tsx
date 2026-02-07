@@ -21,10 +21,10 @@ export default function SettingsForm({ initialData }: { initialData: any }) {
 
     setSaving(true);
     try {
-      await toast.promise(updateShopSetting(data), {
-        success: "บันทึกการตั้งค่าสำเร็จ",
+      await toast.promise(mustOk(updateShopSetting(data)), {
         loading: "กำลังบันทึกการตั้งค่า...",
-        error: "เกิดข้อผิดพลาดในการบันทึก",
+        success: (r) => r.message,
+        error: (e) => e.message,
       });
     } finally {
       setSaving(false);

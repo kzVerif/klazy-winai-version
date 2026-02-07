@@ -8,7 +8,10 @@ import { requireOrderer } from "../requireOrderer";
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default";
 
 export async function getHistoryBuyOrdersByUserId(userId: string) {
-  await requireUser();
+    const canuse = await requireUser();
+  if (!canuse) {
+    return []
+  }
   try {
     const session = await getServerSession(authOptions);
     if (userId !== session?.user.id) {

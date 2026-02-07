@@ -28,10 +28,10 @@ export function DeleteClassRankButton({ id }: { id: string }) {
   async function handleDelete() {
     if (isDeleting) return;
     setIsDeleting(true);
-    toast.promise(deleteClassRank(id), {
+    toast.promise(mustOk(deleteClassRank(id)), {
       loading: "กำลังลบคลาส...",
-      success: "ลบข้อมูลและย้ายสมาชิกเรียบร้อยแล้ว",
-      error: "ไม่สามารถลบคลาสได้",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
     setIsDeleting(false);
     setOpen(false);

@@ -92,7 +92,10 @@ export default function BuyForm({
     }
 
     if (discountInfo.amount) {
-      return Math.max(0, Math.round((baseTotal - discountInfo.amount) * 100) / 100);
+      return Math.max(
+        0,
+        Math.round((baseTotal - discountInfo.amount) * 100) / 100,
+      );
     }
 
     return baseTotal;
@@ -153,34 +156,25 @@ export default function BuyForm({
 
   const handleBuy = async () => {
     if (!session) return toast.error("กรุณาเข้าสู่ระบบก่อน");
-    if (quantity <= 0) return toast.error("กรุณาเลือกจำนวนสินค้าที่ต้องการซื้อ");
+    if (quantity <= 0)
+      return toast.error("กรุณาเลือกจำนวนสินค้าที่ต้องการซื้อ");
     if (isBuying) return;
 
     setIsBuying(true);
-    const loadingId = toast.loading("กำลังสั่งซื้อสินค้า...");
-
     try {
-      // ✅ ส่ง code ไปด้วย (ถ้าฝั่ง server รองรับ)
-      const status = await buyProducts(quantity, session.user.id, productId, code.trim());
-      // const status = await buyProducts(quantity, session.user.id, productId);
-
-      toast.dismiss(loadingId);
-
-      if (!status?.status) {
-        toast.error(status?.message ?? "เกิดข้อผิดพลาดจากระบบ");
-        return;
-      }
-
-      toast.success("สั่งซื้อสินค้าสำเร็จ กรุณาตรวจสอบประวัติการสั่งซื้อ");
+      toast.promise(
+        mustOk(buyProducts(quantity, session.user.id, productId, code.trim())),
+        {
+          loading: "กำลังสั่งซื้อสินค้า...",
+          success: (r) => r.message,
+          error: (e) => e.message,
+        },
+      );
       setIsOpen(false);
 
       const users = await getUserById(session.user.id);
       await update({ ...session, user: users });
       await refreshUser();
-    } catch (err) {
-      toast.dismiss(loadingId);
-      toast.error("เกิดข้อผิดพลาด กรุณาลองใหม่");
-      console.error(err);
     } finally {
       setIsBuying(false);
     }
@@ -190,7 +184,10 @@ export default function BuyForm({
     <div>
       {/* ✅ เลือกจำนวน */}
       <div className="flex items-center gap-2 w-full sm:w-auto mb-4">
-        <label htmlFor="quantity" className="text-gray-700 font-medium whitespace-nowrap">
+        <label
+          htmlFor="quantity"
+          className="text-gray-700 font-medium whitespace-nowrap"
+        >
           จำนวน:
         </label>
 
@@ -227,17 +224,25 @@ export default function BuyForm({
       <div className="my-4 flex flex-col gap-2 w-full sm:w-72">
         <Badge variant="outline" className="flex items-center justify-between">
           <span>ยอดรวมสินค้า</span>
-          <span className="font-semibold">{baseTotal.toLocaleString()} บาท</span>
+          <span className="font-semibold">
+            {baseTotal.toLocaleString()} บาท
+          </span>
         </Badge>
 
         {feeAvailable && (
-          <Badge variant="destructive" className="flex items-center justify-between">
+          <Badge
+            variant="destructive"
+            className="flex items-center justify-between"
+          >
             <span>ค่าธรรมเนียม (2.9%)</span>
             <span className="font-semibold">+ {fee.toFixed(2)} บาท</span>
           </Badge>
         )}
 
-        <Badge variant="destructive" className="flex items-center justify-between">
+        <Badge
+          variant="destructive"
+          className="flex items-center justify-between"
+        >
           <span>ยอดที่ต้องเติมเงินผ่านวอลเลท</span>
           <span>{finalTotal.toLocaleString()} บาท</span>
         </Badge>
@@ -266,7 +271,8 @@ export default function BuyForm({
                 ยืนยันการสั่งซื้อ
               </div>
               <DialogDescription className="font-medium">
-                ตรวจสอบรายละเอียดก่อนกดยืนยัน (แสดงเฉพาะราคาสินค้า ไม่รวมค่าธรรมเนียม/ยอดเติมเงิน)
+                ตรวจสอบรายละเอียดก่อนกดยืนยัน (แสดงเฉพาะราคาสินค้า
+                ไม่รวมค่าธรรมเนียม/ยอดเติมเงิน)
               </DialogDescription>
             </DialogTitle>
           </DialogHeader>
@@ -283,7 +289,9 @@ export default function BuyForm({
 
                   <div className="flex items-center justify-between">
                     <span>ยอดรวมสินค้า</span>
-                    <span className="text-black">{baseTotal.toLocaleString()} บาท</span>
+                    <span className="text-black">
+                      {baseTotal.toLocaleString()} บาท
+                    </span>
                   </div>
                 </div>
 
@@ -293,7 +301,9 @@ export default function BuyForm({
                     <div className="flex items-center gap-2">
                       <span className="text-neutral-800">โค้ดส่วนลด</span>
                       {discountInfo ? (
-                        <Badge className="bg-emerald-500 text-white">ใช้งานแล้ว</Badge>
+                        <Badge className="bg-emerald-500 text-white">
+                          ใช้งานแล้ว
+                        </Badge>
                       ) : (
                         <Badge variant="outline">ยังไม่ใช้</Badge>
                       )}
@@ -340,7 +350,9 @@ export default function BuyForm({
                   {discountInfo ? (
                     <div className="text-xs text-emerald-700 font-semibold">
                       ใช้โค้ด: {discountInfo.key}{" "}
-                      {discountInfo.percent ? `ลด ${discountInfo.percent}%` : ""}
+                      {discountInfo.percent
+                        ? `ลด ${discountInfo.percent}%`
+                        : ""}
                       {discountInfo.amount ? `ลด ฿${discountInfo.amount}` : ""}
                     </div>
                   ) : (
@@ -375,7 +387,8 @@ export default function BuyForm({
                   </div>
 
                   <div className="text-xs font-semibold text-neutral-600 mt-1">
-                    * หน้านี้แสดงเฉพาะ “ราคาสินค้า” (ไม่รวมค่าธรรมเนียมการเติมเงิน)
+                    * หน้านี้แสดงเฉพาะ “ราคาสินค้า”
+                    (ไม่รวมค่าธรรมเนียมการเติมเงิน)
                   </div>
                 </div>
               </div>

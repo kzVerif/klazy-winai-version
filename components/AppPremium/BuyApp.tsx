@@ -183,18 +183,12 @@ export default function BuyApp({
     };
 
     try {
-      const loading = toast.loading("กำลังสั่งซื้อสินค้า...");
-      const buyStatus = await BuyAppPremium(BuyData);
+      toast.promise(mustOk(BuyAppPremium(BuyData)), {
+        loading: "กำลังสั่งซื้อสินค้า...",
+        success: (r) => r.message,
+        error: (e) => e.message,
+      })
 
-      toast.dismiss(loading);
-
-      if (!buyStatus.success) {
-        toast.error(buyStatus.message);
-        setIsOpen(false);
-        return;
-      }
-
-      toast.success("สั่งซื้อสินค้าสำเร็จ กรุณาตรวจสอบประวัติการสั่งซื้อ");
       setIsOpen(false);
 
       const users = await getUserById(session.user.id);

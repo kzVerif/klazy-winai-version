@@ -7,6 +7,7 @@ export async function requireUser() {
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    throw new Error("UNAUTHORIZED");
+    return false
   } 
+  return true
 }

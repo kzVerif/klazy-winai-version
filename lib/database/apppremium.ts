@@ -60,30 +60,38 @@ export async function updateStatusAppremium(updateData: {
   key?: string;
   isSuggest: boolean;
 }) {
+  // 1) validate input ให้ครบทุกทาง
+  if (!updateData.id) {
+    return { success: false, message: "ไม่พบ ID รายการ" };
+  }
+
+  // 2) auth ให้เป็น business error ชัด ๆ
+  const canUse = await requireAdmin().catch(() => false);
+  if (!canUse) {
+    return { success: false, message: "ไม่มีสิทธิ์ทำรายการนี้" };
+  }
+
   try {
-    const canUse = await requireAdmin();
-    if (!canUse) {
-      return {
-        success: false,
-        message: "ไม่สำเร็จ",
-      };
+    await prisma.appPremiumSetting.update({
+      where: { id: updateData.id, websiteId: identifyWebsite },
+      data: {
+        status: updateData.status,
+        image: updateData.image,
+        key: updateData.key,
+      },
+    });
+
+    revalidatePath("/admin/apppremium");
+    revalidatePath("/app_premium");
+
+    return { success: true, message: "อัปเดทการตั้งค่าแอปพรีเมี่ยมสำเร็จ" };
+  } catch (error: any) {
+    if (error?.code === "P2025") {
+      return { success: false, message: "ไม่พบรายการที่ต้องการอัปเดท" };
     }
 
-    if (updateData.id) {
-      // Update existing record
-      const updatedRecord = await prisma.appPremiumSetting.update({
-        where: { id: updateData.id, websiteId: identifyWebsite },
-        data: {
-          status: updateData.status,
-          image: updateData.image,
-          key: updateData.key,
-        },
-      });
-      revalidatePath("/admin/apppremium");
-      revalidatePath("/app_premium");
-    }
-  } catch (error) {
     console.error("Error updating app premium status:", error);
+    return { success: false, message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์" };
   }
 }
 
@@ -139,13 +147,24 @@ export async function updateAppPremiumProduct(updateData: {
     });
     revalidatePath("/admin/apppremium");
     revalidatePath("/app_premium");
+     return {
+      success: true,
+      message: "แก้ไขแอปพรีเมี่ยมสำเร็จ",
+    };
   } catch (error) {
     console.error("Error updating app premium product:", error);
+    return {
+      success: false,
+      message: "เกิดข้อผิดพลาดฝั่งเซิฟเวอร์",
+    };
   }
 }
 
 export async function BuyAppPremium(data: any) {
-  await requireUser();
+  const canuse = await requireUser();
+  if (!canuse) {
+    return { success: false, message: "ไม่สามารถใช้งานได้" }
+  }
 
   const appSetting = await getStatusAppremium();
   if (!appSetting.status) {

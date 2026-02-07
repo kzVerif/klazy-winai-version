@@ -30,10 +30,10 @@ export function AddCategoriesButtron() {
       return;
     }
 
-    toast.promise(createCategory({ id: "", name, image }), {
+    toast.promise(mustOk(createCategory({ id: "", name, image })), {
       loading: "กำลังบันทึก...",
-      success: "บันทึกการหมวดหมู่ใหม่สำเร็จ",
-      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
 
     setOpen(false)

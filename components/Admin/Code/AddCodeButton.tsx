@@ -36,14 +36,11 @@ export default function AddCodeButton() {
       canDuplicateUse: enabled
     };
 
-    const loadingToast = toast.loading("กำลังสร้างโค้ดใหม่...");
-    const s = await createCode(data);
-    toast.dismiss(loadingToast);
-    if (!s.success) {
-      toast.error(s.message || "สร้างโค้ดไม่สำเร็จ");
-      return;
-    }
-    toast.success("สร้างโค้ดใหม่สำเร็จ");
+    toast.promise(mustOk(createCode(data)), {
+      loading: "กำลังสร้างโค้ดเติมเงิน...",
+      success: (r) => r.message,
+      error: (e) => e.message,
+    })
     form.reset();
   }
 

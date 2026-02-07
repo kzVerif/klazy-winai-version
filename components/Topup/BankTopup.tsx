@@ -101,16 +101,11 @@ export default function BankTopup({ bank }: { bank: any }) {
       }
       toast.loading("กำลังเติมเงิน...");
 
-      const status = await TopupByBank(session.user.id, qr.data);
-      toast.dismiss()
-      if (!status?.status) {
-        toast.error(status?.message || "เกิดข้อผิดพลาด");
-        setTimeout(() => toast.dismiss(), 1500);
-        return;
-      }
-
-      toast.success(`${status?.message}`);
-      toast.dismiss()
+      toast.promise(mustOk(TopupByBank(session.user.id, qr.data)),{
+        loading: "กำลังเติมเงิน...",
+        success: (r) => r.message,
+        error: (e) => e.message,
+      })
       await refreshUser();
 
       URL.revokeObjectURL(imageURL);

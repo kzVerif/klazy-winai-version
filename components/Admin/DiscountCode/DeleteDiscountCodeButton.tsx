@@ -24,27 +24,13 @@ export function DeleteDiscountCodeButton({ id }: { id: string }) {
     if (isDeleting) return;
 
     setIsDeleting(true);
-    const loadingId = toast.loading("กำลังลบโค้ดส่วนลด...");
-
-    try {
-      const status = await deleteDiscountcode(id);
-
-      toast.dismiss(loadingId);
-
-      if (!status?.success) {
-        toast.error(status?.message || "ลบโค้ดส่วนลดไม่สำเร็จ");
-        setIsDeleting(false);
-        return;
-      }
-
-      toast.success(status?.message || "ลบโค้ดส่วนลดสำเร็จ");
-      setOpen(false); // ✅ ปิด dialog เฉพาะตอนสำเร็จ
-    } catch (err) {
-      toast.dismiss(loadingId);
-      toast.error("เกิดข้อผิดพลาดบนเซิร์ฟเวอร์");
-    } finally {
-      setIsDeleting(false);
-    }
+    toast.promise(mustOk(deleteDiscountcode(id)), {
+      loading: "กำลังลบโค้ดส่วนลด...",
+      success: (r) => r.message,
+      error: (e) => e.message,
+    });
+    setOpen(false); // ✅ ปิด dialog เฉพาะตอนสำเร็จ
+    setIsDeleting(false);
   }
 
   return (

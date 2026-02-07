@@ -60,7 +60,7 @@ export function AddProductButton({
     }
 
     toast.promise(
-      createProducts({
+     mustOk(createProducts({
         name,
         price,
         image,
@@ -68,11 +68,11 @@ export function AddProductButton({
         categoriesId: selectedCategory,
         isDiscount: enabled,
         priceDiscount: enabled ? priceDiscount : 0,
-      }),
+      })),
       {
-        loading: "กำลังบันทึก...",
-        success: "สร้างสินค้าใหม่สำเร็จ",
-        error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+        loading: "กำลังสร้างสิน้คา...",
+        success: (r) => r.message,
+      error: (e) => e.message,
       }
     );
   }

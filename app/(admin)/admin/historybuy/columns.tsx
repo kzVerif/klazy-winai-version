@@ -13,7 +13,7 @@ export type AdminBuyProduct = {
   stockId: string;
   productId: string;
   createdAt: Date;
-  price: number
+  price: number;
   product: {
     categoryId: string;
     detail: string | null;
@@ -43,7 +43,7 @@ export const columns: ColumnDef<AdminBuyProduct>[] = [
     accessorKey: "id",
     header: "รหัสคำสั่งซื้อ",
   },
-   {
+  {
     id: "productName",
     accessorFn: (row) => row.product.name,
     header: "ชื่อสินค้า",
@@ -61,9 +61,19 @@ export const columns: ColumnDef<AdminBuyProduct>[] = [
     header: "ผู้ซื้อ",
   },
   {
+    accessorFn: (row) => row.price,
+    header: "ยอดชำระ",
+    cell: ({ row }) => (
+      <span className="font-bold text-primary">
+        ฿{row.original.price.toLocaleString()}
+      </span>
+    ),
+  },
+
+  {
     accessorKey: "createdAt",
     header: (
-      { column } // 👈 นี่คือส่วน header ที่คุณมีอยู่แล้ว
+      { column }, // 👈 นี่คือส่วน header ที่คุณมีอยู่แล้ว
     ) => (
       <button
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -73,8 +83,8 @@ export const columns: ColumnDef<AdminBuyProduct>[] = [
         {column.getIsSorted() === "asc"
           ? "↑"
           : column.getIsSorted() === "desc"
-          ? "↓"
-          : ""}
+            ? "↓"
+            : ""}
       </button>
     ),
     cell: ({ row }) => {

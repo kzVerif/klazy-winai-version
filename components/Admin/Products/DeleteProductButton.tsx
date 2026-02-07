@@ -16,10 +16,10 @@ import { Badge } from "@/components/ui/badge";
 
 export function DeleteProductButton({ id }: { id: string }) {
   function handleDelete(id: string) {
-    toast.promise(deleteProduct(id), {
-      loading: "กำลังลบ...",
-      success: "ลบสินค้าสำเร็จ",
-      error: "ลบไม่สำเร็จ กรุณาลองใหม่",
+    toast.promise(mustOk(deleteProduct(id)), {
+      loading: "กำลังลบสินค้า...",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

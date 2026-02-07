@@ -42,14 +42,11 @@ export default function EditCodeButton({ code }: { code: AllCodes }) {
       expired: new Date(formData.get("expired") as string),
       canDuplicateUse: enabled
     };
-    const loadingToast = toast.loading("กำลังแก้ไข้โค้ด...");
-    const s = await updateCode(data);
-    toast.dismiss(loadingToast);
-    if (!s.success) {
-      toast.error(s.message || "สร้างแก้ไข้โค้ดไม่สำเร็จ");
-      return;
-    }
-    toast.success("แก้ไข้โค้ดสำเร็จ");
+    toast.promise(mustOk(updateCode(data)),{
+      loading: "กำลังอัปเดทโค้ดเติมเงิน...",
+      success: (r) => r.message,
+      error: (e) => e.message,
+    })
     form.reset();
     setIsOpen(false);
   }

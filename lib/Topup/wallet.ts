@@ -49,7 +49,6 @@ export async function walletTopup(url: string) {
     // console.log(response);
 
     const res = await response.json();
-    console.log(res);
 
     // console.log(res.data?.voucher?.member);
 

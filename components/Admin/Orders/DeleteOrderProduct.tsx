@@ -24,10 +24,10 @@ import { useState } from "react";
 export function DeleteOrderProduct({ id }: { id: string }) {
   const [open, setOpen] = useState(false)
   function handleDelete(id: string) {
-    toast.promise(deleteOrderProduct(id), {
-      loading: "กำลังลบ...",
-      success: "ลบสินค้าสำเร็จ",
-      error: "ลบไม่สำเร็จ กรุณาลองใหม่",
+    toast.promise(mustOk(deleteOrderProduct(id)), {
+      loading: "กำลังลบสินค้าพรีออเดอร์...",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

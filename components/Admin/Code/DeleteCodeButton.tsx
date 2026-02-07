@@ -16,11 +16,10 @@ import { deleteCode } from "@/lib/database/code";
 
 export function DeleteCodeButton({ id }: { id: string }) {
   async function handleDelete(id: string) {
-    console.log("Delete user:", id);
-    toast.promise(deleteCode(id), {
-      loading: "กำลังลบ...",
-      success: "ลบโค้ดสำเร็จ",
-      error: "ลบโค้ดไม่สำเร็จ กรุณาลองใหม่",
+    toast.promise(mustOk(deleteCode(id)), {
+      loading: "กำลังลบโค้ดเติมเงิน...",
+      success: (r) => r.message,
+      error: (e) => e.message,
     });
   }
 

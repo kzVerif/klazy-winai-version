@@ -62,10 +62,10 @@ async function handleAddProduct(e: React.FormEvent<HTMLFormElement>) {
     };
 
     // 4. ใช้ Try-Catch หรือ Await เพื่อจัดการ UX
-      await toast.promise(addClassRank(data), {
+      await toast.promise(mustOk(addClassRank(data)), {
         loading: "กำลังสร้างคลาสใหม่...",
-        success: "สร้างคลาสสำเร็จ",
-        error: (err) => `เกิดข้อผิดพลาด: ${err.message}`, // แสดง Error จริงถ้ามี
+        success: (r) => r.message,
+        error: (e) => e.message,
       });
 
       // ปิด Modal เมื่อสำเร็จเท่านั้น
