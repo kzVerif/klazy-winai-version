@@ -28,6 +28,8 @@ export default function AppList({
   const [sortPrice, setSortPrice] = useState<"asc" | "desc" | "">("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
+  
+
   const CATEGORY_LIST = [
     "Netflix",
     "Youtube",
@@ -90,11 +92,12 @@ export default function AppList({
     return app ? Number(app.priceDiscount) : 0;
   };
 
-  const getLink = (id: string) => {
-    const app = apps.find((a) => a.byshopId.trim() === id.trim());
-    return app.id;
-  };
-
+const getLink = (id: string) => {
+  const app = apps.find((a) => a.byshopId?.trim() === id?.trim());
+  
+  // Return the app.id if found, otherwise return the original p.id or a placeholder
+  return app ? app.id : id; 
+};
   return (
     <div>
       <div className="flex items-center justify-start mb-4">
@@ -181,6 +184,7 @@ export default function AppList({
         {filtered.length > 0 ? (
           filtered.map((p) => {
             // ✅ แก้ไข: เมื่อมีการประกาศตัวแปร ต้องใส่ปีกกาครอบ และต้องมี return
+            
             const myapp = getLink(p.id);
 
             return (
