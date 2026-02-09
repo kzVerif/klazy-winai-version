@@ -129,7 +129,7 @@ export default async function Home() {
               </Link>
             </div>
           ))}
-          {app.isSuggest && (
+          {app.isSuggest && app.status && (
             <div className="">
               <Link href={`/app_premium`}>
                 <Card className="focus rounded-xl border bg-white cursor-pointer">
@@ -153,7 +153,7 @@ export default async function Home() {
               </Link>
             </div>
           )}
-          {order?.isSuggest && (
+          {order?.isSuggest && order.status && (
             <Link href={`/order`}>
               <Card className="focus rounded-xl border bg-white cursor-pointer">
                 <CardContent className="flex flex-col items-start justify-center">

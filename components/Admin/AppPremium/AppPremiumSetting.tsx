@@ -13,6 +13,8 @@ import { mustOk } from "@/lib/mustOk";
 export default function AppPremiumSetting({ data }: { data: any }) {
   const [enabled, setEnabled] = useState(data.status);
   const [isSuggest, setIsSuggest] = useState(data.isSuggest);
+  console.log(data);
+  
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

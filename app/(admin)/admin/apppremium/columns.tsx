@@ -1,11 +1,8 @@
 "use client";
 
 import { EditAppPremium } from "@/components/Admin/AppPremium/EditAppPremium";
-import { ViewHistoryBuyButton } from "@/components/Admin/Historybuy/ViewHistoryBuyButton";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { Edit } from "lucide-react";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.

@@ -60,6 +60,7 @@ export async function updateStatusAppremium(updateData: {
   key?: string;
   isSuggest: boolean;
 }) {
+  
   // 1) validate input ให้ครบทุกทาง
   if (!updateData.id) {
     return { success: false, message: "ไม่พบ ID รายการ" };
@@ -78,6 +79,7 @@ export async function updateStatusAppremium(updateData: {
         status: updateData.status,
         image: updateData.image,
         key: updateData.key,
+        isSuggest: updateData.isSuggest
       },
     });
 
