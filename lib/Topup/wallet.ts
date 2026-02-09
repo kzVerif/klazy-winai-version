@@ -4,9 +4,15 @@ process.env.IMPIT_VERBOSE = "1";
 import prisma from "../database/conn";
 import { Impit } from "impit";
 
+const identifyWebsite = process.env.IDENTIFY_WEBSITE ?? "default"
+
 export async function walletTopup(url: string) {
   try {
-    const truemoney = await prisma.topupTruemoney.findFirst();
+    const truemoney = await prisma.topupTruemoney.findFirst({
+      where: {
+        websiteId: identifyWebsite
+      }
+    });
 
     const phone = truemoney?.phone;
 

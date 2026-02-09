@@ -32,6 +32,13 @@ export async function createCode(data: any) {
       message: "ไม่สำเร็จ",
     };
   }
+  if (Number(data.reward) < 0 
+    || Number(data.maxUse<0 )) {
+    return {
+      success: false,
+      message: "กรุณากรอกตัวเลขที่ถูกต้อง",
+    }
+  }
   try {
     await prisma.code.create({
       data: {
@@ -68,6 +75,13 @@ export async function updateCode(data: any) {
       success: false,
       message: "ไม่สำเร็จ",
     };
+  }
+    if (Number(data.reward) < 0 
+    || Number(data.maxUse<0 )) {
+    return {
+      success: false,
+      message: "กรุณากรอกตัวเลขที่ถูกต้อง",
+    }
   }
   try {
     await prisma.code.update({

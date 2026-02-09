@@ -99,7 +99,6 @@ export default function BankTopup({ bank }: { bank: any }) {
         toast.error("ไม่พบ QR Code ในภาพนี้");
         return;
       }
-      toast.loading("กำลังเติมเงิน...");
 
       toast.promise(mustOk(TopupByBank(session.user.id, qr.data)),{
         loading: "กำลังเติมเงิน...",
