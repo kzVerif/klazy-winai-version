@@ -7,7 +7,6 @@ import AddCodeButton from "@/components/Admin/Code/AddCodeButton";
 export default async function page() {
   const data: AllCodes[] = await getAllCode();
   
-  
   return (
     <div className="header-admin">
       <div className="mb-4">

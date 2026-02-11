@@ -18,8 +18,10 @@ model Tenant {
   role         String        @default("user")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @default(now()) @updatedAt
+  pendingEmail String?       @unique
   websites     Websites[]
   historyRents historyRent[]
+  mailOtp      mailOtp[]
 }
 
 model Websites {
@@ -85,18 +87,16 @@ model historyRent {
 }
 
 model WebsiteProducts {
-  id            String        @id @default(cuid())
-  productName   String
-  Description   String
-  image         String?       @db.Text
-  price         Float
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now()) @updatedAt
-  price3mounth  Float         @default(0)
-  price6mounth  Float         @default(0)
-  price12mounth Float         @default(0)
-  website       Websites[]
-  historyRents  historyRent[]
+  id           String        @id @default(cuid())
+  productName  String
+  Description  String
+  image        String?       @db.Text
+  price        Float
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now()) @updatedAt
+  days         Int           @default(0)
+  website      Websites[]
+  historyRents historyRent[]
 }
 
 model Users {
@@ -500,6 +500,20 @@ model Settings {
   updatedAt       DateTime @default(now()) @updatedAt
   websiteId       String   @unique
   website         Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+}
+
+model mailOtp {
+  id        String   @id
+  email     String
+  otp       String
+  tenantId  String
+  expiredAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  attempts  Int      @default(0)
+  Tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId], map: "mailOtp_tenantId_fkey")
 }
 
 enum typeWebsite {
