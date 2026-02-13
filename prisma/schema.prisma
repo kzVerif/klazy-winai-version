@@ -89,7 +89,7 @@ model historyRent {
 model WebsiteProducts {
   id           String        @id @default(cuid())
   productName  String
-  Description  String
+  Description  String?       @db.Text
   image        String?       @db.Text
   price        Float
   createdAt    DateTime      @default(now())
