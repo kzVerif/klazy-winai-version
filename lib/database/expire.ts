@@ -4,13 +4,14 @@ import prisma from "./conn";
 
 const identifyWebsite = process.env.IDENTIFY_WEBSITE || "default";
 
-export async function expiredCheck() {
+export async function expiredCheck() {  
   try {
     const web = await prisma.websites.findUnique({
       where: {
         id: identifyWebsite,
       },
     });
+    
     if (!web || !web?.expiresAt) {
       return false;
     }

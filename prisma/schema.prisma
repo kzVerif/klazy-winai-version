@@ -19,6 +19,7 @@ model Tenant {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @default(now()) @updatedAt
   pendingEmail String?       @unique
+  province     String?       @default("กรุงเทพมหานคร")
   websites     Websites[]
   historyRents historyRent[]
   mailOtp      mailOtp[]
@@ -27,12 +28,12 @@ model Tenant {
 model Websites {
   id                      String                    @id @default(cuid())
   url                     String                    @unique
-  type                    typeWebsite               @default(Other)
   tenantId                String
   expiresAt               DateTime?
   createdAt               DateTime                  @default(now())
   updatedAt               DateTime                  @default(now()) @updatedAt
   websiteProducId         String
+  typeId                  String                    @default("main")
   AppPremiumSetting       AppPremiumSetting?
   AppPremiums             AppPremiums[]
   Categories              Categories[]
@@ -61,12 +62,15 @@ model Websites {
   TopupCode               TopupCode?
   TopupTruemoney          TopupTruemoney?
   Users                   Users[]
+  WebsiteMonthlyTier      WebsiteMonthlyTier[]
   Tenant                  Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  Websites_type           Websites_type             @relation(fields: [typeId], references: [id])
   WebsiteProducts         WebsiteProducts           @relation(fields: [websiteProducId], references: [id], onDelete: Cascade)
   HistoryRents            historyRent[]
 
   @@index([tenantId], map: "Websites_tenantId_fkey")
   @@index([websiteProducId], map: "Websites_websiteProducId_fkey")
+  @@index([typeId], map: "Websites_typeId_fkey")
 }
 
 model historyRent {
@@ -516,12 +520,25 @@ model mailOtp {
   @@index([tenantId], map: "mailOtp_tenantId_fkey")
 }
 
-enum typeWebsite {
-  Valorant
-  Minecraft
-  Roblox
-  FiveM
-  Discord
-  Steam
-  Other
+model WebsiteMonthlyTier {
+  id        String   @id
+  websiteId String
+  year      Int
+  month     Int
+  revenue   Float    @default(0)
+  tier      String   @default("NONE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  Websites  Websites @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@unique([websiteId, year, month])
+  @@index([tier])
+  @@index([websiteId])
+  @@index([year, month])
+}
+
+model Websites_type {
+  id       String     @id
+  name     String     @unique
+  Websites Websites[]
 }
