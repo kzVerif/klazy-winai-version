@@ -43,7 +43,7 @@ const filteredData = React.useMemo(() => {
   const lower = filterValue.toLowerCase();
   return data.filter((item: any) =>
     item.name.toLowerCase().includes(lower) || // ค้นหาจาก username เท่านั้น
-    item.categories.name.toLowerCase().includes(lower)// ค้นหาจาก username เท่านั้น
+    item.category.name.toLowerCase().includes(lower)// ค้นหาจาก username เท่านั้น
   );
 }, [filterValue, data]);
 

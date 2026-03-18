@@ -6,6 +6,7 @@ import { Categories, getCategories } from "@/lib/database/category";
 
 export default async function page() {
   const data: Products[] = await getAllProducts();
+  
   const cData: Categories[] = await getCategories()
   return (
     <div className="header-admin">
