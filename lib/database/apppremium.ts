@@ -31,13 +31,13 @@ export async function getStatusAppremiumForUser() {
 }
 
 export async function getStatusAppremium() {
-  const canUse = await requireAdmin();
-  if (!canUse) {
-    return {
-      success: false,
-      message: "ไม่สำเร็จ",
-    };
-  }
+  // const canUse = await requireAdmin();
+  // if (!canUse) {
+  //   return {
+  //     success: false,
+  //     message: "ไม่สำเร็จ",
+  //   };
+  // }
   const data = await prisma.appPremiumSetting.findFirst({
     where: { websiteId: identifyWebsite },
   });
@@ -270,6 +270,7 @@ export async function BuyAppPremium(data: any) {
       method: "POST",
       body: formData,
     });
+    
     const buyResult = await resBuy.json();
 
     if (buyResult.status !== "success") {

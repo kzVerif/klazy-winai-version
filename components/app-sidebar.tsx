@@ -51,6 +51,7 @@ const menuGroups = [
       { title: "จัดการผู้ใช้", url: "/admin/users" },
       { title: "ตั้งค่าการเติมเงิน", url: "/admin/topupsetting" },
       { title: "ตั้งค่าระบบคลาส", url: "/admin/classrank" },
+      { title: "ตั้งค่าระบบปุ่มช่วยเหลือ", url: "/admin/etcbutton" },
     ],
   },
   {

@@ -19,11 +19,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { getStatusAppremiumForUser } from "@/lib/database/apppremium";
 import { getOrderSettingForUser } from "@/lib/database/orders";
+import { getAllEtcButton, getEtcButtonSetting } from "@/lib/database/etcButton";
 
 export default async function Home() {
   const data = await getHomepage();
   const app = await getStatusAppremiumForUser();
   const order = await getOrderSettingForUser();
+  const etcButtonSetting = await getEtcButtonSetting();
+   const etc = await getAllEtcButton();
 
   return (
     <div className="header container">
@@ -50,6 +53,24 @@ export default async function Home() {
           {data?.setting?.announcement}
         </p>
       </div>
+       {/* ETC BUTTON */}
+      {etcButtonSetting.isOpen ? (
+        <div className="my-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          {etc.map((b: any, index: number) => (
+            <Link href={b.link} key={index} target="_blank">
+              <div className="focus max-w-[800px] max-h-[400px]">
+                <Image
+                  src={b.image || "https://placehold.co/400x200?text=400x200"}
+                  alt={"ปุ่ม ETC"}
+                  width={400}
+                  height={200}
+                  className="object-cover"
+                />
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : null}
 
       {/* สเตตัส */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">

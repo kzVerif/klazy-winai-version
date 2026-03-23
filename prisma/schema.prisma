@@ -20,6 +20,10 @@ model Tenant {
   updatedAt    DateTime      @default(now()) @updatedAt
   pendingEmail String?       @unique
   province     String?       @default("กรุงเทพมหานคร")
+  district     String?
+  subdistrict  String?
+  zipcode      String?
+  address      String?
   websites     Websites[]
   historyRents historyRent[]
   mailOtp      mailOtp[]

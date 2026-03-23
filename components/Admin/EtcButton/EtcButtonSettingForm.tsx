@@ -1,0 +1,80 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import toast from "react-hot-toast";
+import { updateTopupCode } from "@/lib/database/topupcode";
+import { updatedEtcButtonSetting } from "@/lib/database/etcButton";
+
+export default function EtcButtonSettingForm({ data }: { data: any }) {
+  const [enabled, setEnabled] = useState(data.isOpen);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // ดึงข้อมูลจากฟอร์ม
+    const formData = new FormData(e.currentTarget);
+
+    const updateData = {
+      isOpen: enabled,
+      id:data.id
+    };
+
+    console.log(updateData);
+    
+
+    toast.promise(updatedEtcButtonSetting(updateData), {
+      loading: "กำลังบันทึก...",
+      success: "บันทึกการตั้งค่าปุ่มลัดสำเร็จ",
+      error: "บันทึกไม่สำเร็จ กรุณาลองใหม่",
+    });
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="grid gap-4 w-full bg-white border shadow p-4 rounded-2xl"
+    >
+      <h1 className="text-xl font-semibold text">
+        ตั้งค่าปุ่มลัด
+      </h1>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="wallet-switch"
+          checked={enabled}
+          onCheckedChange={setEnabled}
+          className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-gray-300"
+        />
+        <Label htmlFor="wallet-switch">
+          {enabled ? (
+            <Badge
+              variant={"secondary"}
+              className="bg-emerald-500 text-white transition-all ease-in-out duration-300"
+            >
+              เปิดใช้งาน
+            </Badge>
+          ) : (
+            <Badge
+              variant={"outline"}
+              className="transition-all ease-in-out duration-300"
+            >
+              ปิดใช้งาน
+            </Badge>
+          )}
+        </Label>
+      </div>
+
+      <Badge className="text-xs">
+        หลังจากตั้งค่าเสร็จแล้วอย่าลืมกด "บันทึกการแก้ไข"
+      </Badge>
+
+      <Button type="submit" className="btn-main">
+        บันทึกการแก้ไข
+      </Button>
+    </form>
+  );
+}
